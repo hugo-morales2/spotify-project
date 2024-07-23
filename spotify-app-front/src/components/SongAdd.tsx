@@ -1,110 +1,132 @@
+import { useEffect, useState } from "react";
+
+//import { authorize } from "../utils/ReactAuth";
+import { UserData, PlaylistData, TokenResponse } from "../utils/interfaces";
+
+import {
+  API_BASE_URL,
+  TOKEN_URL,
+  REDIRECT_URI,
+  CLIENT_ID,
+} from "../utils/config";
+
 const SongAdd = () => {
+  const [playlistData, setPlaylistData] = useState<PlaylistData | null>(null);
+  const [accessToken, setAccessToken] = useState<string>("");
+  function handleUserData(data: UserData) {
+    localStorage.setItem("user_id", data.id);
+  }
+
+  function handlePlaylistData(data: PlaylistData) {
+    setPlaylistData(data);
+  }
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get("code");
+
+  if (!code) throw Error("Error: code");
+  console.log("Code outside function: " + code);
+
+  useEffect(() => {
+    // const abortController = new AbortController();
+
+    // authorize the app and get the access token
+    const authF = async function auth(code: string) {
+      console.log("start auth...");
+      //async function authorize() {
+      // function handleTokenResponse(response: TokenResponse) {
+      //   localStorage.setItem("access_token", response.access_token);
+      //   console.log("beep bada boop bap i now have the code");
+      //   console.log(JSON.stringify(response));
+      // }
+
+      console.log(`code inside async auth(): ${code}`);
+
+      let codeVerifier = localStorage.getItem("code_verifier");
+      // console.log("code verifier: " + codeVerifier);
+      if (!codeVerifier) throw Error("Error: no code verifier");
+
+      console.log(
+        `codeverifier inside async auth(): ${codeVerifier} before calling ${TOKEN_URL}`
+      );
+
+      const r = await fetch(TOKEN_URL, {
+        method: "POST",
+        body: new URLSearchParams({
+          grant_type: "authorization_code",
+          client_id: CLIENT_ID,
+          code,
+          redirect_uri: REDIRECT_URI,
+          code_verifier: codeVerifier,
+        }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      });
+      // .then((resp) => resp.json())
+      // .then((resp) => handleTokenResponse(resp));
+      //}
+      //authorize();
+
+      const jr = await r.json();
+
+      console.log("end async auth... returning");
+
+      // return jr.access_token;
+      // handleTokenResponse(jr);
+      setAccessToken(jr.access_token);
+      return jr;
+    };
+
+    console.log("songAdd, before auth(code).then");
+
+    authF(code);
+    // authF(code).then((at) => {
+    //   console.log(`at: >>>>> ${JSON.stringify(at)}`);
+    //   setAccessToken(at.access_token);
+    //   console.log("songAdd, inside auth(code)");
+    //   // const access = "Bearer " + localStorage.getItem("access_token");
+    //   const access = "Bearer " + accessToken;
+
+    //   console.log("==== calling me, access: " + accessToken);
+
+    //   // get the user playlists
+    //   fetch(API_BASE_URL + "me", {
+    //     headers: {
+    //       Authorization: accessToken,
+    //     },
+    //   })
+    //     .then((response) => response.json())
+    //     .then((response) => handleUserData(response));
+
+    //   console.log("====== calling playlists, access: " + accessToken);
+
+    //   // get the user's playlists
+    //   const userID = localStorage.getItem("user_id");
+    //   fetch(API_BASE_URL + "users/" + userID + "/playlists", {
+    //     headers: {
+    //       Authorization: access,
+    //     },
+    //   })
+    //     .then((response) => {
+    //       console.log(
+    //         `Received response from ${
+    //           API_BASE_URL + "users/" + userID + "/playlists"
+    //         }`
+    //       );
+    //       return response.json();
+    //     })
+    //     .then((response) => handlePlaylistData(response));
+    // });
+    // return () => abortController.abort();
+  }, [accessToken]);
+
   return (
     <>
-      <h1> Add Song!</h1>
-      <form>
-        <label>
-          Name:
-          <input type="text" name="name" />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
+      <h1> User Playlists: </h1>
+      <div>{JSON.stringify(playlistData)}</div>
     </>
   );
 };
 
 export default SongAdd;
-
-/*
-
-
-    <form id="add-song-form">
-        <label for="track-name">Track Name:</label>
-        <input type="text" id="track-name" name="track-name" required><br>
-        <label for="artist-name">Artist Name:</label>
-        <input type="text" id="artist-name" name="artist-name" required><br>
-        <button type="submit">Add Song</button>
-    </form>
-
-    <div id="status"></div>
-    <!--<script src="{{ url_for('static', filename='js/script.js') }}"></script>-->
-
-    <br><br>
-
-    <form id="add-song-form-id">
-        <label for="track-id">Track ID:</label>
-        <input type="text" id="track-id" name="track-id" required><br>
-        <button type="submit">Add Song</button>
-    </form>
-
-    <div id="status-id"></div>
-
-    <script>
-        // this is to print the success or failure statuses
-        const messageDiv = document.getElementById('message');
-        document.getElementById("add-song-form").addEventListener("submit", function(event) {
-            event.preventDefault(); // Prevent the default form submission
-            
-            // Get the input values
-            var trackName = document.getElementById("track-name").value;
-            var artistName = document.getElementById("artist-name").value;
-            
-            // Create a JSON object with the input values
-            var formData = {
-                "track_name": trackName,
-                "artist_name": artistName
-            };
-            
-            // Send a POST request to the Flask server
-            fetch("/add-song", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())  
-            .then(data => {
-                console.log(data); // Log the response from the server
-                
-
-                // Optionally, display a message to the user indicating success or failure
-            })
-            .catch(error => {
-                console.error("Error:", error); // Log any errors
-            });
-        });
-
-    
-
-        document.getElementById("add-song-form-id").addEventListener("submit", function(event) {
-            event.preventDefault(); // Prevent the default form submission
-            
-            // Get the input values
-            var trackID = document.getElementById("track-id").value;
-            
-            // Create a JSON object with the input values
-            var formData = {
-                "track_id": trackID
-            };
-            
-            // Send a POST request to the Flask server
-            console.log(formData.track_id)
-            fetch("/add-song-by-id", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data); // Log the response from the server
-                // Optionally, display a message to the user indicating success or failure
-            })
-            .catch(error => {
-                console.error("Error:", error); // Log any errors
-            });
-        });
-    </script>
-*/

@@ -13,6 +13,8 @@ import {
 const SongAdd = () => {
   const [playlistData, setPlaylistData] = useState<PlaylistData | null>(null);
   const [accessToken, setAccessToken] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+
   function handleUserData(data: UserData) {
     localStorage.setItem("user_id", data.id);
   }
@@ -29,6 +31,10 @@ const SongAdd = () => {
 
   useEffect(() => {
     // const abortController = new AbortController();
+
+    if (isLoading) return;
+
+    setIsLoading(() => true);
 
     // authorize the app and get the access token
     const authF = async function auth(code: string) {
@@ -80,44 +86,46 @@ const SongAdd = () => {
 
     console.log("songAdd, before auth(code).then");
 
-    authF(code);
-    // authF(code).then((at) => {
-    //   console.log(`at: >>>>> ${JSON.stringify(at)}`);
-    //   setAccessToken(at.access_token);
-    //   console.log("songAdd, inside auth(code)");
-    //   // const access = "Bearer " + localStorage.getItem("access_token");
-    //   const access = "Bearer " + accessToken;
+    // authF(code);
+    authF(code).then((at) => {
+      setIsLoading(() => false);
+      console.log(`at: >>>>> ${JSON.stringify(at)}`);
+      setAccessToken(at.access_token);
+      localStorage.setItem("access_token", at.access_token);
+      console.log("songAdd, inside auth(code)");
+      // const access = "Bearer " + localStorage.getItem("access_token");
+      const access = "Bearer " + accessToken;
 
-    //   console.log("==== calling me, access: " + accessToken);
+      console.log("==== calling me, access: " + accessToken);
 
-    //   // get the user playlists
-    //   fetch(API_BASE_URL + "me", {
-    //     headers: {
-    //       Authorization: accessToken,
-    //     },
-    //   })
-    //     .then((response) => response.json())
-    //     .then((response) => handleUserData(response));
+      // get the user playlists
+      fetch(API_BASE_URL + "me", {
+        headers: {
+          Authorization: accessToken,
+        },
+      })
+        .then((response) => response.json())
+        .then((response) => handleUserData(response));
 
-    //   console.log("====== calling playlists, access: " + accessToken);
+      console.log("====== calling playlists, access: " + accessToken);
 
-    //   // get the user's playlists
-    //   const userID = localStorage.getItem("user_id");
-    //   fetch(API_BASE_URL + "users/" + userID + "/playlists", {
-    //     headers: {
-    //       Authorization: access,
-    //     },
-    //   })
-    //     .then((response) => {
-    //       console.log(
-    //         `Received response from ${
-    //           API_BASE_URL + "users/" + userID + "/playlists"
-    //         }`
-    //       );
-    //       return response.json();
-    //     })
-    //     .then((response) => handlePlaylistData(response));
-    // });
+      // get the user's playlists
+      const userID = localStorage.getItem("user_id");
+      fetch(API_BASE_URL + "users/" + userID + "/playlists", {
+        headers: {
+          Authorization: access,
+        },
+      })
+        .then((response) => {
+          console.log(
+            `Received response from ${
+              API_BASE_URL + "users/" + userID + "/playlists"
+            }`
+          );
+          return response.json();
+        })
+        .then((response) => handlePlaylistData(response));
+    });
     // return () => abortController.abort();
   }, [accessToken]);
 

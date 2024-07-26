@@ -25,6 +25,7 @@ export interface TokenResponse {
   scope: string;
   expires_in: number;
   refresh_token: string;
+  error: string;
 }
 
 export interface PlaylistData {
@@ -32,7 +33,7 @@ export interface PlaylistData {
   items: Playlist[];
 }
 
-interface Playlist {
+export interface Playlist {
   id: string;
   name: string;
   tracks: {

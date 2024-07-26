@@ -1,13 +1,9 @@
-import {
-  CLIENT_ID,
-  REDIRECT_URI,
-  API_BASE_URL,
-  TOKEN_URL,
-} from "../utils/config";
-import { json } from "react-router-dom";
-
+import { CLIENT_ID, REDIRECT_URI, TOKEN_URL } from "../utils/config";
 import { TokenResponse } from "./interfaces";
 
+// get the access token (client credentials flow)
+
+// generate the encoded
 const generateRandomString = (length: number) => {
   const possible =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -33,41 +29,42 @@ export async function genChallenge() {
   const hashed = await sha256(codeVerifier);
   const codeChallenge = base64encode(hashed);
 
-  window.localStorage.setItem("code_verifier", codeVerifier);
+  localStorage.setItem("code_verifier", codeVerifier);
 
   return codeChallenge;
 }
 
-// export async function authorize() {
-//   console.log("start auth...");
+// Auth with the authorization code
+export async function authorize() {
+  function handleTokenResponse(response: TokenResponse) {
+    // console.log("Access Token: ");
+    console.log(JSON.stringify(response));
 
-//   function handleTokenResponse(response: TokenResponse) {
-//     localStorage.setItem("access_token", response.access_token);
-//     console.log("beep bada boop bap i now have the code");
-//     console.log(JSON.stringify(response));
-//   }
+    return response;
+  }
 
-//   const urlParams = new URLSearchParams(window.location.search);
-//   let code = urlParams.get("code");
-//   if (!code) throw Error("Error: code");
+  const urlParams = new URLSearchParams(window.location.search);
+  let code = urlParams.get("code");
+  if (!code) throw Error("Error: code");
 
-//   let codeVerifier = localStorage.getItem("code_verifier");
-//   console.log("code verifier: " + codeVerifier);
-//   if (!codeVerifier) throw Error("Error: no code verifier");
+  let codeVerifier = localStorage.getItem("code_verifier");
+  if (!codeVerifier) throw Error("Error: no code verifier");
 
-//   fetch(TOKEN_URL, {
-//     method: "POST",
-//     body: new URLSearchParams({
-//       grant_type: "authorization_code",
-//       client_id: CLIENT_ID,
-//       code,
-//       redirect_uri: REDIRECT_URI,
-//       code_verifier: codeVerifier,
-//     }),
-//     headers: {
-//       "Content-Type": "application/x-www-form-urlencoded",
-//     },
-//   })
-//     .then((resp) => resp.json())
-//     .then((resp) => handleTokenResponse(resp));
-// }
+  const response = await fetch(TOKEN_URL, {
+    method: "POST",
+    body: new URLSearchParams({
+      grant_type: "authorization_code",
+      client_id: CLIENT_ID,
+      code,
+      redirect_uri: REDIRECT_URI,
+      code_verifier: codeVerifier,
+    }),
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
+  // .then((resp) => resp.json())
+  // .then((resp) => handleTokenResponse(resp));
+  const json_reponse = await response.json();
+  return handleTokenResponse(json_reponse);
+}

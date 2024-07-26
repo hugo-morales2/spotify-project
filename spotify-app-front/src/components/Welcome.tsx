@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { genChallenge } from "../utils/ReactAuth";
-import { CLIENT_ID, REDIRECT_URI, API_BASE_URL } from "../utils/config";
+import { CLIENT_ID, REDIRECT_URI } from "../utils/config";
 
 import { AlbumData } from "../utils/interfaces";
 
@@ -14,7 +14,7 @@ const Welcome = () => {
   const handleRedirect = async () => {
     const code_challenge = await genChallenge();
     const scope =
-      "user-read-private user-read-email playlist-modify-public playlist-modify-private";
+      "playlist-read-private playlist-read-collaborative user-read-private user-read-email playlist-modify-public playlist-modify-private";
     const authUrl = new URL("https://accounts.spotify.com/authorize");
 
     const params = {
@@ -30,9 +30,9 @@ const Welcome = () => {
     window.location.href = authUrl.toString();
   };
 
-  const handleResponse = (resp: AlbumData) => {
-    setData(resp);
-  };
+  // const handleResponse = (resp: AlbumData) => {
+
+  // };
 
   const KdotAlbums = [
     "79ONNoS4M9tfIA1mYLBYVX",
@@ -54,7 +54,7 @@ const Welcome = () => {
       },
     })
       .then((response) => response.json())
-      .then((JSONresp) => handleResponse(JSONresp));
+      .then((JSONresp) => setData(JSONresp));
   }, []);
 
   return (

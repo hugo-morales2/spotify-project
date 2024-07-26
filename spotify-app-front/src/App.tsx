@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Welcome from "./components/Welcome";
 import SongAdd from "./components/SongAdd";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 
 interface Access {
   data: DataAccess;
@@ -22,7 +22,7 @@ function App() {
   function handleResponse(data: Access) {
     //setResponse(data);
     localStorage.setItem("my_access", data.data.access_token);
-    console.log(JSON.stringify(data));
+    console.log("Access token is: " + localStorage.getItem("my_access"));
   }
 
   useEffect(() => {

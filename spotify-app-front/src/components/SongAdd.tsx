@@ -1,113 +1,63 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-//import { authorize } from "../utils/ReactAuth";
-import { UserData, PlaylistData, TokenResponse } from "../utils/interfaces";
+import { UserData, PlaylistData, Playlist } from "../utils/interfaces";
 
-import {
-  API_BASE_URL,
-  TOKEN_URL,
-  REDIRECT_URI,
-  CLIENT_ID,
-} from "../utils/config";
+import { API_BASE_URL } from "../utils/config";
+import { authorize } from "../utils/ReactAuth";
 
 const SongAdd = () => {
-  const [playlistData, setPlaylistData] = useState<PlaylistData | null>(null);
-  const [accessToken, setAccessToken] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [playlistData, setPlaylistData] = useState<Playlist[]>([]);
 
   function handleUserData(data: UserData) {
     localStorage.setItem("user_id", data.id);
   }
 
   function handlePlaylistData(data: PlaylistData) {
-    setPlaylistData(data);
+    setPlaylistData(data.items);
   }
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get("code");
-
-  if (!code) throw Error("Error: code");
-  console.log("Code outside function: " + code);
+  const working = useRef(false);
 
   useEffect(() => {
-    // const abortController = new AbortController();
-
-    if (isLoading) return;
-
-    setIsLoading(() => true);
+    // this will work until we have to refresh the token
+    if (working.current == true) {
+      console.log("useEffect ignored");
+      return;
+    }
 
     // authorize the app and get the access token
-    const authF = async function auth(code: string) {
-      console.log("start auth...");
-      //async function authorize() {
-      // function handleTokenResponse(response: TokenResponse) {
-      //   localStorage.setItem("access_token", response.access_token);
-      //   console.log("beep bada boop bap i now have the code");
-      //   console.log(JSON.stringify(response));
-      // }
+    const auth = async () => {
+      // the logic here will eventually be: if the token has expired, then don't run this. Else, run it.
+      // change when you can
+      if (localStorage.getItem("access_token") == null) {
+        working.current = true;
+        const token_resp = await authorize();
 
-      console.log(`code inside async auth(): ${code}`);
+        if (token_resp.access_token != undefined) {
+          localStorage.setItem("access_token", token_resp.access_token);
+          console.log(
+            "Access token put in local memory: " + token_resp.access_token
+          );
+        }
+      } else {
+        console.log("Nothing happened: there is already a valid access token");
+      }
 
-      let codeVerifier = localStorage.getItem("code_verifier");
-      // console.log("code verifier: " + codeVerifier);
-      if (!codeVerifier) throw Error("Error: no code verifier");
-
-      console.log(
-        `codeverifier inside async auth(): ${codeVerifier} before calling ${TOKEN_URL}`
-      );
-
-      const r = await fetch(TOKEN_URL, {
-        method: "POST",
-        body: new URLSearchParams({
-          grant_type: "authorization_code",
-          client_id: CLIENT_ID,
-          code,
-          redirect_uri: REDIRECT_URI,
-          code_verifier: codeVerifier,
-        }),
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      });
-      // .then((resp) => resp.json())
-      // .then((resp) => handleTokenResponse(resp));
-      //}
-      //authorize();
-
-      const jr = await r.json();
-
-      console.log("end async auth... returning");
-
-      // return jr.access_token;
-      // handleTokenResponse(jr);
-      setAccessToken(jr.access_token);
-      return jr;
+      const at = localStorage.getItem("access_token");
+      if (!at) throw Error("Access token is null");
     };
 
-    console.log("songAdd, before auth(code).then");
-
-    // authF(code);
-    authF(code).then((at) => {
-      setIsLoading(() => false);
-      console.log(`at: >>>>> ${JSON.stringify(at)}`);
-      setAccessToken(at.access_token);
-      localStorage.setItem("access_token", at.access_token);
-      console.log("songAdd, inside auth(code)");
-      // const access = "Bearer " + localStorage.getItem("access_token");
-      const access = "Bearer " + accessToken;
-
-      console.log("==== calling me, access: " + accessToken);
-
+    // The rest of the calls after the auth
+    auth().then(() => {
+      const access = "Bearer " + localStorage.getItem("access_token");
       // get the user playlists
       fetch(API_BASE_URL + "me", {
         headers: {
-          Authorization: accessToken,
+          Authorization: access,
         },
       })
         .then((response) => response.json())
         .then((response) => handleUserData(response));
-
-      console.log("====== calling playlists, access: " + accessToken);
 
       // get the user's playlists
       const userID = localStorage.getItem("user_id");
@@ -126,13 +76,18 @@ const SongAdd = () => {
         })
         .then((response) => handlePlaylistData(response));
     });
-    // return () => abortController.abort();
-  }, [accessToken]);
+  }, []);
 
   return (
     <>
       <h1> User Playlists: </h1>
-      <div>{JSON.stringify(playlistData)}</div>
+      <div>
+        {playlistData.map((item, index) => (
+          <div key={index}>
+            {index + 1} : {item.name}
+          </div>
+        ))}
+      </div>
     </>
   );
 };

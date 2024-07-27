@@ -8,12 +8,12 @@ import { authorize } from "../utils/ReactAuth";
 const SongAdd = () => {
   const [playlistData, setPlaylistData] = useState<Playlist[]>([]);
 
-  function handleUserData(data: UserData) {
-    localStorage.setItem("user_id", data.id);
-  }
-
   function handlePlaylistData(data: PlaylistData) {
     setPlaylistData(data.items);
+  }
+
+  async function handleUserData(data: UserData) {
+    localStorage.setItem("user_id", data.id);
   }
 
   const working = useRef(false);
@@ -48,39 +48,37 @@ const SongAdd = () => {
       return at;
     }
 
-    // The rest of the calls after the auth
-    auth()
-      .then((resp) => {
-        const access = "Bearer " + resp;
-        // get the user playlists
-        fetch(API_BASE_URL + "me", {
-          headers: {
-            Authorization: access,
-          },
-        })
-          .then((response) => response.json())
-          .then((response) => handleUserData(response));
+    // what to do after auth:
+    auth().then(async (resp) => {
+      const access = "Bearer " + resp;
+      // get the userID and put it into localStorage
+      fetch(API_BASE_URL + "me", {
+        headers: {
+          Authorization: access,
+        },
       })
-      .then((resp) => {
-        const access = "Bearer " + resp;
+        .then((userResponse) => userResponse.json())
+        .then((user) => {
+          handleUserData(user);
 
-        // get the user's playlists
-        const userID = localStorage.getItem("user_id");
-        fetch(API_BASE_URL + "users/" + userID + "/playlists", {
-          headers: {
-            Authorization: access,
-          },
-        })
-          .then((response) => {
-            console.log(
-              `Received response from ${
-                API_BASE_URL + "users/" + userID + "/playlists"
-              }`
-            );
-            return response.json();
+          // get the user's playlists
+          const userID = user.id;
+          fetch(API_BASE_URL + "users/" + userID + "/playlists", {
+            headers: {
+              Authorization: access,
+            },
           })
-          .then((response) => handlePlaylistData(response));
-      });
+            .then((response) => {
+              console.log(
+                `Received response from ${
+                  API_BASE_URL + "users/" + userID + "/playlists"
+                }`
+              );
+              return response.json();
+            })
+            .then((response) => handlePlaylistData(response));
+        });
+    });
   }, []);
 
   return (

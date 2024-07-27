@@ -1,9 +1,20 @@
 import { CLIENT_ID, REDIRECT_URI, TOKEN_URL } from "../utils/config";
-import { TokenResponse } from "./interfaces";
+import { TokenResponse, Access } from "./interfaces";
 
 // get the access token (client credentials flow)
+export async function getCCAccessToken() {
+  function handleResponse(response: Access) {
+    console.log(JSON.stringify(response));
+    return response.data.access_token;
+  }
 
-// generate the encoded
+  const resp = await fetch("http://127.0.0.1:5000");
+
+  const accessToken = await resp.json();
+  return handleResponse(accessToken);
+}
+
+// generate the code
 const generateRandomString = (length: number) => {
   const possible =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -34,7 +45,7 @@ export async function genChallenge() {
   return codeChallenge;
 }
 
-// Auth with the authorization code
+// Get the access token (authorization code flow)
 export async function authorize() {
   function handleTokenResponse(response: TokenResponse) {
     // console.log("Access Token: ");
@@ -63,8 +74,6 @@ export async function authorize() {
       "Content-Type": "application/x-www-form-urlencoded",
     },
   });
-  // .then((resp) => resp.json())
-  // .then((resp) => handleTokenResponse(resp));
   const json_reponse = await response.json();
   return handleTokenResponse(json_reponse);
 }

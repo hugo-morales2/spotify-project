@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { genChallenge } from "../utils/ReactAuth";
+import { genChallenge, getCCAccessToken } from "../utils/ReactAuth";
 import { CLIENT_ID, REDIRECT_URI } from "../utils/config";
 
 import { AlbumData } from "../utils/interfaces";
@@ -9,7 +9,7 @@ const client_id = CLIENT_ID;
 const redirect_uri = REDIRECT_URI;
 
 const Welcome = () => {
-  const [data, setData] = useState<AlbumData | null>(null);
+  const [featAlbum, setFeatAlbum] = useState<AlbumData | null>(null);
 
   const handleRedirect = async () => {
     const code_challenge = await genChallenge();
@@ -46,20 +46,25 @@ const Welcome = () => {
     KdotAlbums[Math.floor(Math.random() * KdotAlbums.length)];
 
   useEffect(() => {
-    let accessToken = localStorage.getItem("my_access");
+    async function featuredAlbum() {
+      const accessToken = await getCCAccessToken();
 
-    fetch(AlbumURL, {
-      headers: {
-        Authorization: "Bearer " + accessToken,
-      },
-    })
-      .then((response) => response.json())
-      .then((JSONresp) => setData(JSONresp));
+      console.log("Making the call with: " + accessToken);
+      fetch(AlbumURL, {
+        headers: {
+          Authorization: "Bearer " + accessToken,
+        },
+      })
+        .then((response) => response.json())
+        .then((JSONresp) => setFeatAlbum(JSONresp));
+    }
+
+    featuredAlbum();
   }, []);
 
   return (
     <>
-      <div className="featAlbum">Feat Album: {data?.name}</div>
+      <div className="featAlbum">Feat Album: {featAlbum?.name}</div>
       <h1>Spotify App</h1>
       <div className="card">
         <button onClick={handleRedirect}>Log in with Spotify</button>

@@ -26,7 +26,7 @@ const SongAdd = () => {
     }
 
     // authorize the app and get the access token
-    const auth = async () => {
+    async function auth() {
       // the logic here will eventually be: if the token has expired, then don't run this. Else, run it.
       // change when you can
       if (localStorage.getItem("access_token") == null) {
@@ -45,37 +45,42 @@ const SongAdd = () => {
 
       const at = localStorage.getItem("access_token");
       if (!at) throw Error("Access token is null");
-    };
+      return at;
+    }
 
     // The rest of the calls after the auth
-    auth().then(() => {
-      const access = "Bearer " + localStorage.getItem("access_token");
-      // get the user playlists
-      fetch(API_BASE_URL + "me", {
-        headers: {
-          Authorization: access,
-        },
-      })
-        .then((response) => response.json())
-        .then((response) => handleUserData(response));
-
-      // get the user's playlists
-      const userID = localStorage.getItem("user_id");
-      fetch(API_BASE_URL + "users/" + userID + "/playlists", {
-        headers: {
-          Authorization: access,
-        },
-      })
-        .then((response) => {
-          console.log(
-            `Received response from ${
-              API_BASE_URL + "users/" + userID + "/playlists"
-            }`
-          );
-          return response.json();
+    auth()
+      .then((resp) => {
+        const access = "Bearer " + resp;
+        // get the user playlists
+        fetch(API_BASE_URL + "me", {
+          headers: {
+            Authorization: access,
+          },
         })
-        .then((response) => handlePlaylistData(response));
-    });
+          .then((response) => response.json())
+          .then((response) => handleUserData(response));
+      })
+      .then((resp) => {
+        const access = "Bearer " + resp;
+
+        // get the user's playlists
+        const userID = localStorage.getItem("user_id");
+        fetch(API_BASE_URL + "users/" + userID + "/playlists", {
+          headers: {
+            Authorization: access,
+          },
+        })
+          .then((response) => {
+            console.log(
+              `Received response from ${
+                API_BASE_URL + "users/" + userID + "/playlists"
+              }`
+            );
+            return response.json();
+          })
+          .then((response) => handlePlaylistData(response));
+      });
   }, []);
 
   return (

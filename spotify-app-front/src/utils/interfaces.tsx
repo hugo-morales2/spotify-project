@@ -1,3 +1,13 @@
+export interface Access {
+  data: DataAccess;
+}
+
+interface DataAccess {
+  access_token: string;
+  expires_in: number;
+  token_type: string;
+}
+
 export interface AlbumData {
   name: string;
   tracks: {

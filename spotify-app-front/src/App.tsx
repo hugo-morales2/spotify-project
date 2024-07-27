@@ -6,31 +6,13 @@ import Welcome from "./components/Welcome";
 import SongAdd from "./components/SongAdd";
 import { useEffect } from "react";
 
-interface Access {
-  data: DataAccess;
-}
-
-interface DataAccess {
-  access_token: string;
-  expires_in: number;
-  token_type: string;
-}
-
 function App() {
-  //const [response, setResponse] = useState<Access | null>(null);
-
-  function handleResponse(data: Access) {
-    //setResponse(data);
-    localStorage.setItem("my_access", data.data.access_token);
-    console.log("Access token is: " + localStorage.getItem("my_access"));
-  }
-
   useEffect(() => {
-    // call to my flask ('/') endpoint
-    fetch("http://127.0.0.1:5000")
-      .then((response_1) => response_1.json())
-      .then((hugo) => handleResponse(hugo));
-  }, []);
+    if (!sessionStorage.getItem("localStorageCleared")) {
+      localStorage.clear();
+      sessionStorage.setItem("localStorageCleared", "true");
+    }
+  });
 
   return (
     <>

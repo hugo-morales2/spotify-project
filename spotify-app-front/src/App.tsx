@@ -2,9 +2,13 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import Welcome from "./components/Welcome";
-import SongAdd from "./components/SongAdd";
+import Welcome from "./pages/Welcome";
+import SongAdd from "./pages/SongAdd";
+import PageSelect from "./pages/PageSelect";
+
 import { useEffect } from "react";
+import TopArtists from "./pages/TopArtists";
+import UserPlaylist from "./pages/UserPlaylist";
 
 function App() {
   useEffect(() => {
@@ -20,6 +24,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Welcome />} />
           <Route path="/SongAdd" element={<SongAdd />} />
+          <Route path="/PageSelect" element={<PageSelect />} />
+          <Route path="/TopArtists" element={<TopArtists />} />
+          <Route path="/UserPlaylist" element={<UserPlaylist />} />
         </Routes>
       </Router>
     </>

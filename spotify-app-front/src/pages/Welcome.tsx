@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { genChallenge, getCCAccessToken } from "../utils/ReactAuth";
 import { CLIENT_ID, REDIRECT_URI } from "../utils/config";

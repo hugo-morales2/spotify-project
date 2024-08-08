@@ -1,10 +1,12 @@
+import { useContext } from "react";
 import { CLIENT_ID, REDIRECT_URI, TOKEN_URL } from "../utils/config";
 import { TokenResponse, Access } from "./interfaces";
+import { AuthContext } from "./AuthContext";
 
 // get the access token (client credentials flow)
 export async function getCCAccessToken() {
   function handleResponse(response: Access) {
-    console.log(JSON.stringify(response));
+    //console.log(JSON.stringify(response));
     return response.data.access_token;
   }
 
@@ -49,7 +51,6 @@ export async function genChallenge() {
 export async function authorize() {
   function handleTokenResponse(response: TokenResponse) {
     // console.log("Access Token: ");
-    console.log(JSON.stringify(response));
 
     return response;
   }

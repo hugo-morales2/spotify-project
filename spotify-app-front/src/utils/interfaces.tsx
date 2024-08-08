@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface Access {
   data: DataAccess;
 }
@@ -38,6 +40,11 @@ export interface TokenResponse {
   error: string;
 }
 
+export interface UserData {
+  display_name: string;
+  id: string;
+}
+
 export interface PlaylistData {
   total: number;
   items: Playlist[];
@@ -50,9 +57,11 @@ export interface Playlist {
     href: string;
     total: number;
   };
+  owner: UserData;
 }
 
-export interface UserData {
-  display_name: string;
-  id: string;
+export interface AuthContextProps {
+  children: ReactNode;
 }
+
+// make sure to put the type for auth context back here eventually

@@ -9,6 +9,7 @@ import PageSelect from "./pages/PageSelect";
 import { useEffect } from "react";
 import TopArtists from "./pages/TopArtists";
 import UserPlaylist from "./pages/UserPlaylist";
+import { AppAuth } from "./utils/AuthContext";
 
 function App() {
   useEffect(() => {
@@ -19,7 +20,7 @@ function App() {
   });
 
   return (
-    <>
+    <AppAuth>
       <Router>
         <Routes>
           <Route path="/" element={<Welcome />} />
@@ -29,7 +30,7 @@ function App() {
           <Route path="/UserPlaylist" element={<UserPlaylist />} />
         </Routes>
       </Router>
-    </>
+    </AppAuth>
   );
 }
 

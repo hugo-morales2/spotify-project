@@ -1,30 +1,67 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { TOKEN_URL, CLIENT_ID } from "./config";
-import { TokenResponse } from "./interfaces";
+import { TokenResponse, AuthContextProps } from "./interfaces";
+import { authorize } from "./ReactAuth";
 
-export const AuthContext = createContext();
+// this file is a context that is used to make the access token and user ID accessible to all components
 
-export const AppAuth = ({ children }) => {
+// make sure to move this back to interfaces
+export interface AuthContextType {
+  accessToken: string | null;
+  refreshToken: string | null;
+  setRefreshToken: (token: string | null) => void;
+  setAccessToken: (token: string | null) => void;
+  getAccessToken: () => void;
+}
+
+const defaultAuthContext: AuthContextType = {
+  accessToken: null,
+  refreshToken: null,
+  setRefreshToken: () => null,
+  setAccessToken: () => null,
+  getAccessToken: () => null,
+};
+
+export const AuthContext = createContext<AuthContextType>(defaultAuthContext);
+
+export function AppAuth({ children }: AuthContextProps) {
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
-  const [accessToken, setAccessToken] = useState(null);
-  const [expiresIn, setExpiresIn] = useState(0);
 
-  function handleTokenResponse({
-    access_token,
-    expires_in,
-    refresh_token,
-  }: TokenResponse) {
+  const currAccessToken = useRef<string | null>(null);
+  const currRefreshToken = useRef<string | null>(null);
+  const working = useRef(false);
 
-    localStorage.setItem("access_token", access_token);
-    localStorage.setItem("refresh_token", refresh_token);
-    setRefreshToken(refresh_token)
-    
+  function handleTokenResponse({ access_token, refresh_token }: TokenResponse) {
+    setAccessToken(access_token);
+    setRefreshToken(refresh_token);
+    currAccessToken.current = access_token;
+    currRefreshToken.current = refresh_token;
+  }
+
+  async function getAccessToken() {
+    if (working.current == true) return;
+
+    if (!accessToken) {
+      console.log(
+        "Access token is " + accessToken + " and the getAccess is running"
+      );
+      working.current = true;
+      const token_resp = await authorize();
+
+      setAccessToken(token_resp.access_token);
+      setRefreshToken(token_resp.refresh_token);
+      currAccessToken.current = token_resp.access_token;
+      currRefreshToken.current = token_resp.refresh_token;
+    } else {
+      console.log("Nothing happened: there is already a valid access token");
+    }
   }
 
   async function fetchNewToken(refresh_token: string | null) {
     if (!refresh_token) throw Error("no refresh token");
 
-    const newToken = await fetch(TOKEN_URL, {
+    const response = await fetch(TOKEN_URL, {
       method: "POST",
       body: new URLSearchParams({
         grant_type: "refresh_token",
@@ -35,18 +72,32 @@ export const AppAuth = ({ children }) => {
         "Content-Type": "application/x-www-form-urlencoded",
       },
     });
-    const json_reponse = await newToken.json();
-    return handleTokenResponse(json_reponse);
+    const json_response = await response.json();
+    return handleTokenResponse(json_response);
   }
 
   useEffect(() => {
+    // refresh token logic
     if (refreshToken) {
-      const timeoutID = setTimeout(() => {fetchNewToken(refreshToken)}, (3600 * 1000) - 5000)
+      const timeoutID = setTimeout(() => {
+        fetchNewToken(refreshToken);
+      }, 3600 * 1000 - 5000);
+
+      return () => clearTimeout(timeoutID);
     }
+  }, [accessToken, refreshToken]);
 
-  }, []);
-
-  return <AuthContext.Provider value={{accessToken, setAccessToken, setExpiresIn}}>{children}</AuthContext.Provider>;
-};
-
-export const useAuth = () => useContext(AuthContext);
+  return (
+    <AuthContext.Provider
+      value={{
+        accessToken,
+        setAccessToken,
+        refreshToken,
+        setRefreshToken,
+        getAccessToken,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}

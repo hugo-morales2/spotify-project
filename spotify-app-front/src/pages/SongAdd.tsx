@@ -1,74 +1,71 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PageButton from "../components/PageButton";
 
 import { UserData, PlaylistData, Playlist } from "../utils/interfaces";
 
 import { API_BASE_URL } from "../utils/config";
+import { AuthContext } from "../utils/AuthContext";
+import { Button, Form } from "react-bootstrap";
 
 const SongAdd = () => {
+  const { accessToken } = useContext(AuthContext);
   const [playlistData, setPlaylistData] = useState<Playlist[]>([]);
-  const navigate = useNavigate();
+  const userID = localStorage.getItem("userID");
 
   function handlePlaylistData(data: PlaylistData) {
-    setPlaylistData(data.items);
+    const userPlaylists = data.items.filter(
+      (playlist) => playlist.owner.id === userID
+    );
+    setPlaylistData(userPlaylists);
   }
-
-  async function handleUserData(data: UserData) {
-    localStorage.setItem("user_id", data.id);
-  }
-
   useEffect(() => {
-    // this will work until we have to refresh the token
-    async function auth() {
-      return localStorage.getItem("access_token");
-    }
+    const access = "Bearer " + accessToken;
 
-    // what to do after auth:
-    auth().then(async (resp) => {
-      const access = "Bearer " + resp;
-      // get the userID and put it into localStorage
-      fetch(API_BASE_URL + "me", {
-        headers: {
-          Authorization: access,
-        },
+    // get the user's playlists
+    fetch(API_BASE_URL + "users/" + userID + "/playlists", {
+      headers: {
+        Authorization: access,
+      },
+    })
+      .then((response) => {
+        return response.json();
       })
-        .then((userResponse) => userResponse.json())
-        .then((user) => {
-          handleUserData(user);
-
-          // get the user's playlists
-          const userID = user.id;
-          fetch(API_BASE_URL + "users/" + userID + "/playlists", {
-            headers: {
-              Authorization: access,
-            },
-          })
-            .then((response) => {
-              console.log(
-                `Received response from ${
-                  API_BASE_URL + "users/" + userID + "/playlists"
-                }`
-              );
-              return response.json();
-            })
-            .then((response) => handlePlaylistData(response));
-        });
-    });
+      .then((response) => handlePlaylistData(response));
   }, []);
 
   return (
     <>
       <div>
-        <button onClick={() => navigate("/PageSelect")}></button>
+        <PageButton name="Home" link="/PageSelect" />
       </div>
-      <h1> User Playlists: </h1>
-      <div>
-        {playlistData.map((item, index) => (
-          <div key={index}>
-            {index + 1} : {item.name}
-          </div>
-        ))}
-      </div>
+      <h1>Add a song!</h1>
+      <Form>
+        <Form.Group className="mb-2" controlId="playlistSelect">
+          <Form.Label>Choose a playlist: </Form.Label>
+          <Form.Select aria-label="Choose a playlist: ">
+            <option>Choose a playlist</option>
+            {playlistData.map((playlist, index) => (
+              <option key={index}>{playlist.name}</option>
+            ))}
+          </Form.Select>
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="songName">
+          <Form.Label>Enter the name of a song: </Form.Label>
+          <Form.Control type="text" />
+        </Form.Group>
+
+        <h2>OR</h2>
+
+        <Form.Group className="mb-3" controlId="songID">
+          <Form.Label>Enter the song's Spotify ID: </Form.Label>
+          <Form.Control type="text" />
+        </Form.Group>
+        <Button variant="primary" type="submit">
+          Add Song!
+        </Button>
+      </Form>
     </>
   );
 };

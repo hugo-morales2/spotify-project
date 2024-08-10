@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import { TOKEN_URL, CLIENT_ID } from "./config";
 import { TokenResponse, AuthContextProps } from "./interfaces";
 import { authorize } from "./ReactAuth";
@@ -28,31 +28,24 @@ export function AppAuth({ children }: AuthContextProps) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
-  const currAccessToken = useRef<string | null>(null);
-  const currRefreshToken = useRef<string | null>(null);
   const working = useRef(false);
 
   function handleTokenResponse({ access_token, refresh_token }: TokenResponse) {
     setAccessToken(access_token);
     setRefreshToken(refresh_token);
-    currAccessToken.current = access_token;
-    currRefreshToken.current = refresh_token;
   }
 
   async function getAccessToken() {
     if (working.current == true) return;
 
     if (!accessToken) {
-      console.log(
-        "Access token is " + accessToken + " and the getAccess is running"
-      );
       working.current = true;
       const token_resp = await authorize();
 
+      localStorage.setItem("access_token", token_resp.access_token);
+      localStorage.setItem("refresh_token", token_resp.refresh_token);
       setAccessToken(token_resp.access_token);
       setRefreshToken(token_resp.refresh_token);
-      currAccessToken.current = token_resp.access_token;
-      currRefreshToken.current = token_resp.refresh_token;
     } else {
       console.log("Nothing happened: there is already a valid access token");
     }
@@ -77,6 +70,10 @@ export function AppAuth({ children }: AuthContextProps) {
   }
 
   useEffect(() => {
+    // gotta do this because the tokens don't persist through refreshes
+    setAccessToken(localStorage.getItem("access_token"));
+    setRefreshToken(localStorage.getItem("refresh_token"));
+
     // refresh token logic
     if (refreshToken) {
       const timeoutID = setTimeout(() => {

@@ -1,17 +1,17 @@
 import { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import PageButton from "../components/PageButton";
 
-import { UserData, PlaylistData, Playlist } from "../utils/interfaces";
+import { PlaylistData, Playlist } from "../utils/interfaces";
 
 import { API_BASE_URL } from "../utils/config";
-import { AuthContext } from "../utils/AuthContext";
 import { Button, Form } from "react-bootstrap";
+import { AuthContext } from "../utils/AuthContext";
 
 const SongAdd = () => {
-  const { accessToken } = useContext(AuthContext);
   const [playlistData, setPlaylistData] = useState<Playlist[]>([]);
   const userID = localStorage.getItem("userID");
+
+  const { accessToken } = useContext(AuthContext);
 
   function handlePlaylistData(data: PlaylistData) {
     const userPlaylists = data.items.filter(
@@ -20,6 +20,7 @@ const SongAdd = () => {
     setPlaylistData(userPlaylists);
   }
   useEffect(() => {
+    if (!accessToken) return;
     const access = "Bearer " + accessToken;
 
     // get the user's playlists
@@ -29,10 +30,11 @@ const SongAdd = () => {
       },
     })
       .then((response) => {
+        console.log("call was made and responded to ");
         return response.json();
       })
       .then((response) => handlePlaylistData(response));
-  }, []);
+  }, [accessToken]);
 
   return (
     <>

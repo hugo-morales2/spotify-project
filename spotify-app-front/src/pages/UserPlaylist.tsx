@@ -1,7 +1,7 @@
 import PageButton from "../components/PageButton";
 import { useContext, useEffect, useState } from "react";
 
-import { UserData, PlaylistData, Playlist } from "../utils/interfaces";
+import { PlaylistData, Playlist } from "../utils/interfaces";
 
 import { API_BASE_URL } from "../utils/config";
 import { AuthContext } from "../utils/AuthContext";
@@ -16,6 +16,8 @@ const UserPlaylist = () => {
   }
 
   useEffect(() => {
+    if (!accessToken) return;
+
     const access = "Bearer " + accessToken;
 
     // get the user's playlists
@@ -35,7 +37,7 @@ const UserPlaylist = () => {
       .then((response) => handlePlaylistData(response));
 
     // });
-  }, []);
+  }, [accessToken]);
 
   return (
     <>

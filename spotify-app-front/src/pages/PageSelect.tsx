@@ -8,18 +8,23 @@ import { API_BASE_URL } from "../utils/config";
 import { UserData } from "../utils/interfaces";
 
 const pageSelect = () => {
-  const { accessToken, getAccessToken } = useContext(AuthContext);
+  const { getAccessToken, accessToken } = useContext(AuthContext);
+  //const isAuthorized = useRef(false);
 
   function handleUserData(data: UserData) {
     localStorage.setItem("userID", data.id);
   }
 
   useEffect(() => {
-    if (!accessToken) {
+    if (!localStorage.getItem("userID") && !accessToken) {
       getAccessToken();
       return;
     }
-    console.log("Access Token: " + accessToken);
+
+    if (!accessToken) {
+      return;
+    }
+
     //code for getting the user's ID
     const access = "Bearer " + accessToken;
     fetch(API_BASE_URL + "me", {

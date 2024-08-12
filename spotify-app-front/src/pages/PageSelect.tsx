@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 //import { useNavigate } from "react-router-dom";
 
 import { Container, Row, Col } from "react-bootstrap";
@@ -8,11 +8,15 @@ import { API_BASE_URL } from "../utils/config";
 import { UserData } from "../utils/interfaces";
 
 const pageSelect = () => {
+  const [displayName, setDisplayName] = useState("");
+
   const { getAccessToken, accessToken } = useContext(AuthContext);
+
   //const isAuthorized = useRef(false);
 
   function handleUserData(data: UserData) {
     localStorage.setItem("userID", data.id);
+    setDisplayName(data.display_name);
   }
 
   useEffect(() => {
@@ -40,6 +44,7 @@ const pageSelect = () => {
 
   return (
     <>
+      <div className="userName">{displayName}</div>
       <h1>Home</h1>
       <Container>
         <Row>

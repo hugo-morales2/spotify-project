@@ -1,17 +1,107 @@
-import { useContext, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 import PageButton from "../components/PageButton";
 
-import { PlaylistData, Playlist } from "../utils/interfaces";
+import { PlaylistData, Playlist, searchResponse } from "../utils/interfaces";
 
 import { API_BASE_URL } from "../utils/config";
 import { Button, Form } from "react-bootstrap";
 import { AuthContext } from "../utils/AuthContext";
+import formReducer from "../utils/reducers";
+
+const initialFormState = {
+  songName: "",
+  artistName: "",
+  songID: "",
+};
+
+const initialPlaylistSet = {
+  selectedPlaylistId: "",
+  selectedTrackId: "",
+  selectedTrackName: "",
+};
 
 const SongAdd = () => {
-  const [playlistData, setPlaylistData] = useState<Playlist[]>([]);
+  // auth info
   const userID = localStorage.getItem("userID");
-
   const { accessToken } = useContext(AuthContext);
+
+  // user's playlists ~ required for all song add logic
+  const [playlistData, setPlaylistData] = useState<Playlist[]>([]);
+
+  // states required for display -> look into useMemo() hook
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
+  const [songName, setSongName] = useState("");
+  const [songID, setSongID] = useState("");
+  const [artistName, setArtistName] = useState("");
+
+  const [nameFormState, dispatch] = useReducer(formReducer, initialFormState);
+
+  // CHANGe
+  function handleTextChange(event: any) {
+    dispatch({
+      type: "HANDLE INPUT TEXT",
+      field: event.target.name,
+      payload: event.target.value,
+    });
+  }
+
+  // handle the submission of the song name/artist form -> goal is to obtain a song ID for use with the ID form
+  function handleNameSubmit(event: React.FormEvent<HTMLFormElement>) {
+    function handleSearchResponse(data: searchResponse) {
+      console.log(data.tracks.items.length + " items found: ");
+      for (let i = 0; i < data.tracks.items.length; i++) {
+        console.log(
+          data.tracks.items[i].name +
+            " by " +
+            data.tracks.items[i].artists[0].name
+        );
+      }
+    }
+
+    event.preventDefault();
+    const access = "Bearer " + accessToken;
+    const params = new URLSearchParams({
+      q: "track:" + songName + " artist:" + artistName,
+      type: "track",
+    });
+
+    // call to get the results of the user's search
+    fetch(API_BASE_URL + "search?" + params.toString(), {
+      method: "GET",
+      headers: {
+        Authorization: access,
+      },
+    })
+      // response.status to get status -> for success/fail
+      .then((response) => response.json())
+      .then((response) => handleSearchResponse(response));
+  }
+
+  // handle the submission of the ID form -> should add a song directly to selected playlist
+  function handleIdSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    console.log(selectedPlaylistId);
+    const access = "Bearer " + accessToken;
+
+    const uris = { uris: ["spotify:track:" + songID] };
+
+    fetch(API_BASE_URL + "playlists/" + selectedPlaylistId + "/tracks", {
+      method: "POST",
+      body: JSON.stringify(uris),
+      headers: {
+        Authorization: access,
+      },
+    }).then((response) => {
+      if (response.status == 201) console.log("Success!");
+      return response;
+    });
+  }
 
   function handlePlaylistData(data: PlaylistData) {
     const userPlaylists = data.items.filter(
@@ -30,7 +120,7 @@ const SongAdd = () => {
       },
     })
       .then((response) => {
-        console.log("call was made and responded to ");
+        //console.log("call was made and responded to ");
         return response.json();
       })
       .then((response) => handlePlaylistData(response));
@@ -42,27 +132,63 @@ const SongAdd = () => {
         <PageButton name="Home" link="/PageSelect" />
       </div>
       <h1>Add a song!</h1>
-      <Form>
-        <Form.Group className="mb-2" controlId="playlistSelect">
-          <Form.Label>Choose a playlist: </Form.Label>
-          <Form.Select aria-label="Choose a playlist: ">
-            <option>Choose a playlist</option>
-            {playlistData.map((playlist, index) => (
-              <option key={index}>{playlist.name}</option>
-            ))}
-          </Form.Select>
-        </Form.Group>
+      <Form.Group className="mb-2" controlId="playlistSelect">
+        <Form.Label>Choose a playlist: </Form.Label>
+        <Form.Select
+          aria-label="Choose a playlist: "
+          onChange={(e) => setSelectedPlaylistId(e.target.value)}
+        >
+          <option>Choose a playlist</option>
+          {playlistData.map((playlist) => (
+            <option value={playlist.id} key={playlist.id}>
+              {playlist.name}
+            </option>
+          ))}
+        </Form.Select>
+      </Form.Group>
 
+      <Form onSubmit={handleNameSubmit}>
         <Form.Group className="mb-3" controlId="songName">
-          <Form.Label>Enter the name of a song: </Form.Label>
-          <Form.Control type="text" />
+          <Form.Label>Enter a song and its artist: </Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Song Name"
+            name="SongName"
+            value={songName}
+            onChange={(e) => {
+              setSongName(e.target.value);
+              setSongID("");
+            }}
+          />
+          <Form.Control
+            type="text"
+            placeholder="Artist Name"
+            name="artistName"
+            value={artistName}
+            onChange={(e) => {
+              setArtistName(e.target.value);
+              setSongID("");
+            }}
+          />
         </Form.Group>
+        <Button variant="primary" type="submit">
+          Search
+        </Button>
+      </Form>
 
-        <h2>OR</h2>
-
+      <h2>OR</h2>
+      <Form onSubmit={handleIdSubmit}>
         <Form.Group className="mb-3" controlId="songID">
           <Form.Label>Enter the song's Spotify ID: </Form.Label>
-          <Form.Control type="text" />
+          <Form.Control
+            type="text"
+            value={songID}
+            onChange={(e) => {
+              setSongID(e.target.value);
+              setSongName("");
+              setArtistName("");
+            }}
+          />
         </Form.Group>
         <Button variant="primary" type="submit">
           Add Song!

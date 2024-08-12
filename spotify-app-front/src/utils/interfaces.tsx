@@ -64,4 +64,12 @@ export interface AuthContextProps {
   children: ReactNode;
 }
 
+export interface searchResponse {
+  tracks: {
+    items: Tracks[];
+  };
+  artists: { items: [] };
+  albums: { items: AlbumData[] };
+}
+
 // make sure to put the type for auth context back here eventually

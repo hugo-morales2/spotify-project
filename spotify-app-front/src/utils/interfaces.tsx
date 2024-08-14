@@ -21,7 +21,7 @@ interface TrackList {
   items: Tracks[];
 }
 
-interface Tracks {
+export interface Tracks {
   artists: [
     {
       name: string;

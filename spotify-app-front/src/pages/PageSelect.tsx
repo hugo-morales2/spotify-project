@@ -52,8 +52,10 @@ const pageSelect = () => {
             <PageButton name={"Add a Song"} link={"/SongAdd"} />
             <PageButton name={"Check User Playlists"} link={"/UserPlaylist"} />
             <PageButton name={"Top Artists"} link={"/TopArtists"} />
-            <PageButton name={"Back to Welcome"} link={"/"} />
           </Col>
+        </Row>
+        <Row>
+          <PageButton name={"Back to Welcome"} link={"/"} />
         </Row>
       </Container>
     </>

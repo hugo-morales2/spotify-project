@@ -15,7 +15,14 @@ import {
 } from "../utils/interfaces";
 
 import { API_BASE_URL } from "../utils/config";
-import { Button, Card, Dropdown, DropdownButton, Form } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Dropdown,
+  DropdownButton,
+  DropdownMenu,
+  Form,
+} from "react-bootstrap";
 import { AuthContext } from "../utils/AuthContext";
 import formReducer from "../utils/reducers";
 
@@ -199,21 +206,21 @@ const SongAdd = () => {
         </Button>
       </Form>
 
-      <Card style={{ width: "18rem" }}>
-        {/* <Card.Img variant="top" src="holder.js/100px180" /> */}
-        <Card.Body>
-          <DropdownButton id="dropdown-basic-button" title="Songs">
-            {trackData.map((track) => (
-              <Dropdown.Item
-                key={track.id}
-                onClick={() => handleTrackSelect(track.id)}
-              >
-                {track.name}
-              </Dropdown.Item>
-            ))}
-          </DropdownButton>
-        </Card.Body>
-      </Card>
+      <Dropdown drop="down-centered">
+        <Dropdown.Toggle variant="success" id="dropdown-basic">
+          Songs
+        </Dropdown.Toggle>
+        <DropdownMenu>
+          {trackData.map((track) => (
+            <Dropdown.Item
+              key={track.id}
+              onClick={() => handleTrackSelect(track.id)}
+            >
+              {track.name}
+            </Dropdown.Item>
+          ))}
+        </DropdownMenu>
+      </Dropdown>
 
       <h2>OR</h2>
       <Form onSubmit={handleIdSubmit}>

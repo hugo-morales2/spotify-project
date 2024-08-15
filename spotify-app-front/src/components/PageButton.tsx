@@ -12,6 +12,8 @@ const PageButton = ({ name, link }: ButtonProps) => {
   return (
     <Button
       size="lg"
+      variant="secondary"
+      className="pageSelectButton"
       onClick={() => {
         navigate(link);
       }}

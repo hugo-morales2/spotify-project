@@ -5,6 +5,7 @@ import { genChallenge, getCCAccessToken } from "../utils/ReactAuth";
 import { CLIENT_ID, REDIRECT_URI } from "../utils/config";
 
 import { AlbumData } from "../utils/interfaces";
+import { Button } from "react-bootstrap";
 const client_id = CLIENT_ID;
 const redirect_uri = REDIRECT_URI;
 
@@ -73,7 +74,9 @@ const Welcome = () => {
       <div className="featAlbum">Feat Album: {featAlbum?.name}</div>
       <h1>Spotify App</h1>
       <div className="card">
-        <button onClick={handleRedirect}>Log in with Spotify</button>
+        <Button variant="secondary" onClick={handleRedirect}>
+          Log in with Spotify
+        </Button>
       </div>
     </>
   );

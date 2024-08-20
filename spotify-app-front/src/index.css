@@ -27,8 +27,6 @@ h1 {
   line-height: 1.2;
 }
 
-
-
 @media (prefers-color-scheme: light) {
   :root {
     color: #e4e4e4;

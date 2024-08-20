@@ -46,7 +46,7 @@ const pageSelect = () => {
     <>
       <div className="userName">{displayName}</div>
       <h1>Home</h1>
-      <Container>
+      <Container fluid="lg">
         <Row>
           <Col>
             <PageButton name={"Add a Song"} link={"/SongAdd"} />

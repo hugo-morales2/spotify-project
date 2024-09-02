@@ -3,16 +3,17 @@ import { useNavigate } from "react-router-dom";
 import "../css/welcome.css";
 
 import { genChallenge, getCCAccessToken } from "../utils/ReactAuth";
-import { CLIENT_ID, REDIRECT_URI } from "../utils/config";
+import { CLIENT_ID, REDIRECT_URI, API_BASE_URL } from "../utils/config";
 
-import { AlbumData } from "../utils/interfaces";
-import { Button } from "react-bootstrap";
+import { AlbumData, searchResponse, Artist } from "../utils/interfaces";
+
 const client_id = CLIENT_ID;
 const redirect_uri = REDIRECT_URI;
 
 const Welcome = () => {
   const navigate = useNavigate();
   const [featAlbum, setFeatAlbum] = useState<AlbumData | null>(null);
+  const [featArtist, setFeatArtist] = useState<Artist | null>(null);
 
   const handleRedirect = async () => {
     // YOU NEED TO REFRESH THE ACCESS TOKEN. THIS LINE SHOULD BE IF THE ACCESS TOKEN EXISTS AND IS NOT EXPIRED
@@ -38,33 +39,63 @@ const Welcome = () => {
     }
   };
 
-  // const handleResponse = (resp: AlbumData) => {
+  //
+  //
 
-  // };
+  async function getRandomAlbum(access: string) {
+    function choosePlaylist(resp: searchResponse) {
+      const randomIndex = Math.floor(Math.random() * 15);
+      console.log("bruvingon " + resp.albums.items[randomIndex]);
+      setFeatAlbum(resp.albums.items[randomIndex]);
+      setFeatArtist(resp.albums.items[randomIndex].artists[0]);
+    }
 
-  const KdotAlbums = [
-    "79ONNoS4M9tfIA1mYLBYVX",
-    "4alcGHjstaALJHHiljfy3H",
-    "0kL3TYRsSXnu0iJvFO3rud",
-    "3DGQ1iZ9XKUQxAUWjfC34w",
-    "7ycBtnsMtyVbbwTfJwRjSP",
-  ];
-  let AlbumURL =
-    "https://api.spotify.com/v1/albums/" +
-    KdotAlbums[Math.floor(Math.random() * KdotAlbums.length)];
+    //
+    const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+
+    const params = new URLSearchParams({
+      q: alphabet[Math.floor(Math.random() * alphabet.length)] + "%",
+      type: "album",
+    });
+
+    // call to get the results of the user's search
+    fetch(API_BASE_URL + "search?" + params.toString(), {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + access,
+      },
+    })
+      .then((response) => response.json())
+      .then((response) => choosePlaylist(response));
+  }
+  //
+  //
+
+  // const KdotAlbums = [
+  //   "79ONNoS4M9tfIA1mYLBYVX",
+  //   "4alcGHjstaALJHHiljfy3H",
+  //   "0kL3TYRsSXnu0iJvFO3rud",
+  //   "3DGQ1iZ9XKUQxAUWjfC34w",
+  //   "7ycBtnsMtyVbbwTfJwRjSP",
+  // ];
+  // let AlbumURL =
+  //   API_BASE_URL +
+  //   "albums/" +
+  //   KdotAlbums[Math.floor(Math.random() * KdotAlbums.length)];
 
   useEffect(() => {
     async function featuredAlbum() {
       const accessToken = await getCCAccessToken();
+      getRandomAlbum(accessToken);
 
-      console.log("Making the call with: " + accessToken);
-      fetch(AlbumURL, {
-        headers: {
-          Authorization: "Bearer " + accessToken,
-        },
-      })
-        .then((response) => response.json())
-        .then((JSONresp) => setFeatAlbum(JSONresp));
+      // console.log("Making the call with: " + accessToken);
+      // fetch(AlbumURL, {
+      //   headers: {
+      //     Authorization: "Bearer " + accessToken,
+      //   },
+      // })
+      //   .then((response) => response.json())
+      //   .then((JSONresp) => setFeatAlbum(JSONresp));
     }
 
     featuredAlbum();
@@ -72,12 +103,17 @@ const Welcome = () => {
 
   return (
     <>
-      <div className="featAlbum">Feat Album: {featAlbum?.name}</div>
+      <div>
+        Feat Album: {featAlbum?.name} - {featArtist?.name}
+      </div>
       <h1>Spotify App</h1>
       <div className="card">
-        <Button variant="secondary" onClick={handleRedirect}>
+        <button
+          className="w-26 bg-gray-600 px-5 py-3 rounded-full hover:bg-gray-500"
+          onClick={handleRedirect}
+        >
           Log in with Spotify
-        </Button>
+        </button>
       </div>
     </>
   );

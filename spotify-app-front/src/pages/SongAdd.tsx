@@ -15,16 +15,10 @@ import {
 } from "../utils/interfaces";
 
 import { API_BASE_URL } from "../utils/config";
-import {
-  Button,
-  Card,
-  Dropdown,
-  DropdownButton,
-  DropdownMenu,
-  Form,
-} from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { AuthContext } from "../utils/AuthContext";
 import formReducer from "../utils/reducers";
+import { useLocation } from "react-router-dom";
 
 const initialFormState = {
   songName: "",
@@ -33,22 +27,28 @@ const initialFormState = {
 };
 
 // not implemented yet
-const initialPlaylistSet = {
-  selectedPlaylistId: "",
-  selectedTrackId: "",
-  selectedTrackName: "",
-};
+// const initialPlaylistSet = {
+//   selectedPlaylistId: "",
+//   selectedTrackId: "",
+//   selectedTrackName: "",
+// };
 
 const SongAdd = () => {
   // auth info
   const userID = localStorage.getItem("userID");
   const { accessToken } = useContext(AuthContext);
 
+  // For if this page was triggered with a playlist pre selected
+  const location = useLocation();
+  console.log("Selected PLaylist: " + location.state?.setAlbum);
+
   // user's playlists ~ required for all song add logic
   const [playlistData, setPlaylistData] = useState<Playlist[]>([]);
 
   // states required for display -> look into useMemo() hook
-  const [selectedPlaylistId, setSelectedPlaylistId] = useState("");
+  const [selectedPlaylistId, setSelectedPlaylistId] = useState(
+    location.state?.setAlbum.id
+  );
 
   const [nameFormState, dispatch] = useReducer(formReducer, initialFormState);
 
@@ -72,14 +72,21 @@ const SongAdd = () => {
 
     event.preventDefault();
     const access = "Bearer " + accessToken;
-    const params = new URLSearchParams({
-      q:
-        "track:" +
-        nameFormState.songName +
-        " artist:" +
-        nameFormState.artistName,
-      type: "track",
-    });
+
+    const params =
+      nameFormState.songName != ""
+        ? new URLSearchParams({
+            q:
+              "track:" +
+              nameFormState.songName +
+              " artist:" +
+              nameFormState.artistName,
+            type: "track",
+          })
+        : new URLSearchParams({
+            q: "artist:" + nameFormState.artistName,
+            type: "track",
+          });
 
     // call to get the results of the user's search
     fetch(API_BASE_URL + "search?" + params.toString(), {
@@ -164,79 +171,86 @@ const SongAdd = () => {
 
   return (
     <>
-      <div>
-        <PageButton name="Home" link="/PageSelect" />
-      </div>
-      <h1>Add a song!</h1>
-      <Form.Group className="mb-2" controlId="playlistSelect">
-        <Form.Label>Choose a playlist: </Form.Label>
-        <Form.Select
-          aria-label="Choose a playlist: "
-          onChange={(e) => setSelectedPlaylistId(e.target.value)}
-        >
-          <option>Choose a playlist</option>
-          {playlistData.map((playlist) => (
-            <option value={playlist.id} key={playlist.id}>
-              {playlist.name}
+      <div className="space-y-4">
+        <div>
+          <PageButton name="Home" link="/PageSelect" />
+        </div>
+        <h1>Add a song!</h1>
+        <Form.Group className="mb-2" controlId="playlistSelect">
+          <Form.Select
+            className="rounded-full p-1.5 text-black bg-gray-300"
+            onChange={(e) => setSelectedPlaylistId(e.target.value)}
+          >
+            <option className="text-black bg-gray-300">
+              Choose a playlist
             </option>
-          ))}
-        </Form.Select>
-      </Form.Group>
-
-      <Form onSubmit={handleNameSubmit}>
-        <Form.Group className="mb-3" controlId="songName">
-          <Form.Label>Enter a song and/or artist: </Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Song Name"
-            name="songName"
-            value={nameFormState.songName}
-            onChange={(e) => handleTextChange(e)}
-          />
-          <Form.Control
-            type="text"
-            placeholder="Artist Name"
-            name="artistName"
-            value={nameFormState.artistName}
-            onChange={(e) => handleTextChange(e)}
-          />
+            {playlistData.map((playlist) => (
+              <option
+                className="text-black bg-gray-300"
+                value={playlist.id}
+                key={playlist.id}
+              >
+                {playlist.name}
+              </option>
+            ))}
+          </Form.Select>
         </Form.Group>
-        <Button variant="primary" type="submit">
-          Search
-        </Button>
-      </Form>
 
-      <Dropdown drop="down-centered">
-        <Dropdown.Toggle variant="success" id="dropdown-basic">
-          Songs
-        </Dropdown.Toggle>
-        <DropdownMenu>
-          {trackData.map((track) => (
-            <Dropdown.Item
-              key={track.id}
-              onClick={() => handleTrackSelect(track.id)}
-            >
-              {track.name}
-            </Dropdown.Item>
-          ))}
-        </DropdownMenu>
-      </Dropdown>
+        <Form onSubmit={handleNameSubmit}>
+          <Form.Group className="mb-3 space-x-2" controlId="songName">
+            <Form.Control
+              className="text-center rounded-full p-1.5 text-black bg-gray-300"
+              type="text"
+              placeholder="Song Name"
+              name="songName"
+              value={nameFormState.songName}
+              onChange={(e) => handleTextChange(e)}
+            />
+            <Form.Control
+              className="text-center rounded-full p-1.5 text-black bg-gray-300"
+              type="text"
+              placeholder="Artist Name"
+              name="artistName"
+              value={nameFormState.artistName}
+              onChange={(e) => handleTextChange(e)}
+            />
+          </Form.Group>
+          <button className="pageSelectButton bg-gray-600 p-3 rounded-full hover:bg-gray-500">
+            Search
+          </button>
+        </Form>
 
-      <h2>OR</h2>
-      <Form onSubmit={handleIdSubmit}>
-        <Form.Group className="mb-3" controlId="songID">
-          <Form.Label>Enter the song's Spotify ID: </Form.Label>
-          <Form.Control
-            type="text"
-            name="songID"
-            value={nameFormState.songID}
-            onChange={(e) => handleTextChange(e)}
-          />
-        </Form.Group>
-        <Button variant="primary" type="submit">
-          Add Song!
-        </Button>
-      </Form>
+        <div>
+          <div className="mb-6">Songs:</div>
+          <div className="flex flex-wrap gap-4 justify-center">
+            {trackData.map((track) => (
+              <div
+                className="bg-gray-600 p-3 rounded-md hover:bg-gray-500"
+                key={track.id}
+                onClick={() => handleTrackSelect(track.id)}
+              >
+                {track.name}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <Form onSubmit={handleIdSubmit}>
+          <Form.Group className="mb-3" controlId="songID">
+            <div className="mb-3">Enter the song's Spotify ID: </div>
+            <Form.Control
+              className="text-center rounded-full p-1.5 text-black bg-gray-300"
+              type="text"
+              name="songID"
+              value={nameFormState.songID}
+              onChange={(e) => handleTextChange(e)}
+            />
+          </Form.Group>
+          <button className="pageSelectButton w-26 bg-gray-600 p-3 rounded-full hover:bg-gray-500">
+            Add Song!
+          </button>
+        </Form>
+      </div>
     </>
   );
 };

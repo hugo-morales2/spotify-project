@@ -1,4 +1,3 @@
-import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 interface ButtonProps {
@@ -10,16 +9,14 @@ const PageButton = ({ name, link }: ButtonProps) => {
   const navigate = useNavigate();
 
   return (
-    <Button
-      size="lg"
-      variant="secondary"
-      className="pageSelectButton"
+    <button
+      className="pageSelectButton w-26 bg-gray-600 p-3 rounded-full hover:bg-gray-500"
       onClick={() => {
         navigate(link);
       }}
     >
       {name}
-    </Button>
+    </button>
   );
 };
 

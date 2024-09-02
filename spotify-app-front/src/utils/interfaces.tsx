@@ -10,11 +10,17 @@ interface DataAccess {
   token_type: string;
 }
 
+export interface Artist {
+  id: string;
+  name: string;
+}
+
 export interface AlbumData {
   name: string;
   tracks: {
     items: TrackList[];
   };
+  artists: Artist[];
 }
 
 interface TrackList {
@@ -68,8 +74,12 @@ export interface searchResponse {
   tracks: {
     items: Tracks[];
   };
-  artists: { items: [] };
-  albums: { items: AlbumData[] };
+  artists: {
+    items: Artist[];
+  };
+  albums: {
+    items: AlbumData[];
+  };
 }
 
 // make sure to put the type for auth context back here eventually

@@ -13,6 +13,7 @@ interface DataAccess {
 export interface Artist {
   id: string;
   name: string;
+  popularity: number;
 }
 
 export interface AlbumData {
@@ -83,3 +84,13 @@ export interface searchResponse {
 }
 
 // make sure to put the type for auth context back here eventually
+
+//
+
+export interface genreStateForm {
+  pop: Artist[];
+  rock: Artist[];
+  indie: Artist[];
+  hiphop: Artist[];
+  rnb: Artist[];
+}

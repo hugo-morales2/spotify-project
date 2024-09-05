@@ -40,14 +40,13 @@ const SongAdd = () => {
 
   // For if this page was triggered with a playlist pre selected
   const location = useLocation();
-  console.log("Selected PLaylist: " + location.state?.setAlbum);
 
   // user's playlists ~ required for all song add logic
   const [playlistData, setPlaylistData] = useState<Playlist[]>([]);
 
   // states required for display -> look into useMemo() hook
   const [selectedPlaylistId, setSelectedPlaylistId] = useState(
-    location.state?.setAlbum.id
+    location.state?.setAlbum.id || ""
   );
 
   const [nameFormState, dispatch] = useReducer(formReducer, initialFormState);
@@ -180,6 +179,7 @@ const SongAdd = () => {
           <Form.Select
             className="rounded-full p-1.5 text-black bg-gray-300"
             onChange={(e) => setSelectedPlaylistId(e.target.value)}
+            value={selectedPlaylistId}
           >
             <option className="text-black bg-gray-300">
               Choose a playlist
@@ -229,7 +229,7 @@ const SongAdd = () => {
                 key={track.id}
                 onClick={() => handleTrackSelect(track.id)}
               >
-                {track.name}
+                {track.name} - {track.artists[0].name}
               </div>
             ))}
           </div>

@@ -77,6 +77,7 @@ export function AppAuth({ children }: AuthContextProps) {
     // refresh token logic
     if (refreshToken) {
       const timeoutID = setTimeout(() => {
+        console.log("Access token expired - refreshing token");
         fetchNewToken(refreshToken);
       }, 3600 * 1000 - 5000);
 

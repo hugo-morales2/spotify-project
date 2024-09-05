@@ -105,6 +105,9 @@ const UserPlaylist = () => {
                 {track.name} - {track.artists[0].name}
               </div>
             ))}
+          {trackData != undefined && trackData.length == 0 && (
+            <div>This playlist is empty!</div>
+          )}
           {trackData != undefined && (
             <button
               onClick={() => handleAddSong()}
@@ -112,9 +115,6 @@ const UserPlaylist = () => {
             >
               Add Song to this playlist!
             </button>
-          )}
-          {trackData != undefined && trackData.length == 0 && (
-            <div>This playlist is empty!</div>
           )}
         </div>
       )}

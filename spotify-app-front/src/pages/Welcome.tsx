@@ -71,31 +71,10 @@ const Welcome = () => {
   //
   //
 
-  // const KdotAlbums = [
-  //   "79ONNoS4M9tfIA1mYLBYVX",
-  //   "4alcGHjstaALJHHiljfy3H",
-  //   "0kL3TYRsSXnu0iJvFO3rud",
-  //   "3DGQ1iZ9XKUQxAUWjfC34w",
-  //   "7ycBtnsMtyVbbwTfJwRjSP",
-  // ];
-  // let AlbumURL =
-  //   API_BASE_URL +
-  //   "albums/" +
-  //   KdotAlbums[Math.floor(Math.random() * KdotAlbums.length)];
-
   useEffect(() => {
     async function featuredAlbum() {
       const accessToken = await getCCAccessToken();
       getRandomAlbum(accessToken);
-
-      // console.log("Making the call with: " + accessToken);
-      // fetch(AlbumURL, {
-      //   headers: {
-      //     Authorization: "Bearer " + accessToken,
-      //   },
-      // })
-      //   .then((response) => response.json())
-      //   .then((JSONresp) => setFeatAlbum(JSONresp));
     }
 
     featuredAlbum();
@@ -104,7 +83,7 @@ const Welcome = () => {
   return (
     <>
       <div>
-        Feat Album: {featAlbum?.name} - {featArtist?.name}
+        Featured Album: {featAlbum?.name} - {featArtist?.name}
       </div>
       <h1>Spotify App</h1>
       <div className="card">

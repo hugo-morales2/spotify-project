@@ -19,13 +19,10 @@ export interface Artist {
 export interface AlbumData {
   name: string;
   tracks: {
-    items: TrackList[];
+    items: Tracks[];
   };
   artists: Artist[];
-}
-
-interface TrackList {
-  items: Tracks[];
+  id: string;
 }
 
 export interface Tracks {

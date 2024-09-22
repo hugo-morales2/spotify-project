@@ -7,6 +7,9 @@ import { CLIENT_ID, REDIRECT_URI, API_BASE_URL } from "../utils/config";
 
 import { AlbumData, searchResponse, Artist } from "../utils/interfaces";
 
+import BlackLogo from "../assets/blackLogo.png";
+import WhiteLogo from "../assets/whiteLogo.png";
+
 const client_id = CLIENT_ID;
 const redirect_uri = REDIRECT_URI;
 
@@ -82,17 +85,28 @@ const Welcome = () => {
 
   return (
     <>
-      <div>
-        Featured Album: {featAlbum?.name} - {featArtist?.name}
-      </div>
-      <h1>Spotify App</h1>
-      <div className="card">
-        <button
-          className="w-26 bg-gray-600 px-5 py-3 rounded-full hover:bg-gray-500"
-          onClick={handleRedirect}
-        >
-          Log in with Spotify
-        </button>
+      <div className="flex flex-col justify-center items-center h-full">
+        <h1 className="mt-12">Spotify App</h1>
+        <div>
+          Featured Album: {featAlbum?.name} - {featArtist?.name}
+        </div>
+
+        <div className="flex justify-center">
+          <button
+            className="relative flex group my-6 w-26 items-center bg-white text-gray-900 px-5 py-3 rounded-lg transition-colors duration-300 hover:bg-green-600 hover:text-white"
+            onClick={handleRedirect}
+          >
+            <img
+              src={BlackLogo}
+              className="w-6 h-6 mr-3 transition-opacity duration-300 group-hover:opacity-0"
+            />
+            <img
+              src={WhiteLogo}
+              className="w-6 h-6 mr-3 absolute transition-opacity duration-300 opacity-0 group-hover:opacity-100"
+            />
+            Log in with Spotify
+          </button>
+        </div>
       </div>
     </>
   );

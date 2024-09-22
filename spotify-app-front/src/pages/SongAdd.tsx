@@ -3,9 +3,9 @@ import {
   useContext,
   useEffect,
   useReducer,
+  useRef,
   useState,
 } from "react";
-import PageButton from "../components/PageButton";
 
 import {
   PlaylistData,
@@ -26,13 +26,6 @@ const initialFormState = {
   songID: "",
 };
 
-// not implemented yet
-// const initialPlaylistSet = {
-//   selectedPlaylistId: "",
-//   selectedTrackId: "",
-//   selectedTrackName: "",
-// };
-
 const SongAdd = () => {
   // auth info
   const userID = localStorage.getItem("userID");
@@ -50,8 +43,9 @@ const SongAdd = () => {
   );
 
   const [nameFormState, dispatch] = useReducer(formReducer, initialFormState);
-
   const [trackData, setTrackData] = useState<Tracks[]>([]);
+
+  const [selectedTrack, setSelectedTrack] = useState<Tracks>();
 
   // CHANGe
 
@@ -100,10 +94,13 @@ const SongAdd = () => {
   }
 
   // handle the submission of the ID form -> should add a song directly to selected playlist
-  function handleIdSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function handleIdSubmit() {
     if (!selectedPlaylistId) {
-      alert("no playlist selected!");
+      alert("No playlist selected!");
+      return;
+    }
+    if (selectedTrack == undefined) {
+      alert("No track selected!");
       return;
     }
 
@@ -112,7 +109,7 @@ const SongAdd = () => {
     console.log(selectedPlaylistId);
     const access = "Bearer " + accessToken;
 
-    const uris = { uris: ["spotify:track:" + nameFormState.songID] };
+    const uris = { uris: ["spotify:track:" + selectedTrack.id] };
 
     fetch(API_BASE_URL + "playlists/" + selectedPlaylistId + "/tracks", {
       method: "POST",
@@ -143,7 +140,6 @@ const SongAdd = () => {
       },
     })
       .then((response) => {
-        //console.log("call was made and responded to ");
         return response.json();
       })
       .then((response) => handlePlaylistData(response));
@@ -160,96 +156,94 @@ const SongAdd = () => {
     });
   }
 
-  function handleTrackSelect(trackID: string) {
-    dispatch({
-      type: "HANDLE INPUT TEXT",
-      field: "songID",
-      payload: trackID,
-    });
-  }
-
   return (
     <>
-      <div className="space-y-4">
-        <div>
-          <PageButton name="Home" link="/PageSelect" />
-        </div>
-        <h1>Add a song!</h1>
-        <Form.Group className="mb-2" controlId="playlistSelect">
-          <Form.Select
-            className="rounded-full p-1.5 text-black bg-gray-300"
-            onChange={(e) => setSelectedPlaylistId(e.target.value)}
-            value={selectedPlaylistId}
-          >
-            <option className="text-black bg-gray-300">
-              Choose a playlist
-            </option>
-            {playlistData.map((playlist) => (
-              <option
-                className="text-black bg-gray-300"
-                value={playlist.id}
-                key={playlist.id}
-              >
-                {playlist.name}
+      <div className="flex flex-col my-4 mx-4 w-auto h-full">
+        <div className="flex-col space-y-4 bg-stone-800 p-6 mx-4 rounded-t-md ">
+          <h1>Add a song!</h1>
+          <Form.Group className="mb-2" controlId="playlistSelect">
+            <Form.Select
+              className="rounded-full p-1.5 text-black bg-gray-300"
+              onChange={(e) => setSelectedPlaylistId(e.target.value)}
+              value={selectedPlaylistId}
+            >
+              <option className="text-gray-400 bg-neutral-800 hover:bg-zinc-700">
+                Choose a playlist
               </option>
-            ))}
-          </Form.Select>
-        </Form.Group>
-
-        <Form onSubmit={handleNameSubmit}>
-          <Form.Group className="mb-3 space-x-2" controlId="songName">
-            <Form.Control
-              className="text-center rounded-full p-1.5 text-black bg-gray-300"
-              type="text"
-              placeholder="Song Name"
-              name="songName"
-              value={nameFormState.songName}
-              onChange={(e) => handleTextChange(e)}
-            />
-            <Form.Control
-              className="text-center rounded-full p-1.5 text-black bg-gray-300"
-              type="text"
-              placeholder="Artist Name"
-              name="artistName"
-              value={nameFormState.artistName}
-              onChange={(e) => handleTextChange(e)}
-            />
+              {playlistData.map((playlist) => (
+                <option
+                  className="text-gray-400 bg-neutral-800 hover:bg-zinc-700"
+                  value={playlist.id}
+                  key={playlist.id}
+                >
+                  {playlist.name}
+                </option>
+              ))}
+            </Form.Select>
           </Form.Group>
-          <button className="pageSelectButton bg-gray-600 p-3 rounded-full hover:bg-gray-500">
-            Search
-          </button>
-        </Form>
 
-        <div>
-          <div className="mb-6">Songs:</div>
-          <div className="flex flex-wrap gap-4 justify-center">
-            {trackData.map((track) => (
-              <div
-                className="bg-gray-600 p-3 rounded-md hover:bg-gray-500"
-                key={track.id}
-                onClick={() => handleTrackSelect(track.id)}
+          <Form onSubmit={handleNameSubmit}>
+            <Form.Group className="mb-3 space-x-2" controlId="songName">
+              <Form.Control
+                className="text-center rounded-full p-1.5 text-black bg-gray-300"
+                type="text"
+                placeholder="Song Name"
+                name="songName"
+                value={nameFormState.songName}
+                onChange={(e) => handleTextChange(e)}
+              />
+              <Form.Control
+                className="text-center rounded-full p-1.5 text-black bg-gray-300"
+                type="text"
+                placeholder="Artist Name"
+                name="artistName"
+                value={nameFormState.artistName}
+                onChange={(e) => handleTextChange(e)}
+              />
+            </Form.Group>
+            <button className="p-3 rounded-md bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2">
+              Search
+            </button>
+          </Form>
+        </div>
+        <div className=" mx-4 p-6 bg-stone-800 rounded-b-md">
+          <div className="flex flex-col h-full justify-between  ">
+            Songs:
+            <div className="grid grid-cols-2 md:grid-cols-8 gap-4 mt-3 mb-6 text-center flex-grow">
+              {trackData.map((track) => (
+                <button
+                  className=" px-2 rounded-md transition-colors duration-100 bg-neutral-900 hover:bg-neutral-700"
+                  key={track.id}
+                  onClick={() => setSelectedTrack(track)}
+                >
+                  {track.name} - {track.artists[0].name}
+                </button>
+              ))}
+            </div>
+            <div className="flex justify-center mt-auto space-x-3">
+              <button
+                onClick={() => {
+                  handleIdSubmit();
+                }}
+                className={
+                  "p-3 rounded-md" +
+                  (selectedTrack == undefined
+                    ? " bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2"
+                    : "bg-zinc-700 transition-colors duration-300 hover:bg-zinc-500 border-gray-950 border-2")
+                }
               >
-                {track.name} - {track.artists[0].name}
-              </div>
-            ))}
+                {"Add " +
+                  (selectedTrack != undefined ? selectedTrack.name : "Song")}
+              </button>
+              <button
+                onClick={() => setSelectedTrack(undefined)}
+                className="p-3 rounded-md bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2"
+              >
+                Clear Selection
+              </button>
+            </div>
           </div>
         </div>
-
-        <Form onSubmit={handleIdSubmit}>
-          <Form.Group className="mb-3" controlId="songID">
-            <div className="mb-3">Enter the song's Spotify ID: </div>
-            <Form.Control
-              className="text-center rounded-full p-1.5 text-black bg-gray-300"
-              type="text"
-              name="songID"
-              value={nameFormState.songID}
-              onChange={(e) => handleTextChange(e)}
-            />
-          </Form.Group>
-          <button className="pageSelectButton w-26 bg-gray-600 p-3 rounded-full hover:bg-gray-500">
-            Add Song!
-          </button>
-        </Form>
       </div>
     </>
   );

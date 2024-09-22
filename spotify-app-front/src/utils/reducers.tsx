@@ -25,10 +25,6 @@ export const genreBlockReducer = (
 ) => {
   switch (action.type) {
     case ACTIONS.HANDLE_ARTISTS:
-      console.log(
-        "the right action was triggered but nothing happened: " + action.field
-      );
-      console.log("should be replaced with: " + action.payload);
       return {
         ...state,
         [action.field]: action.payload,

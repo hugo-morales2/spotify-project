@@ -10,6 +10,9 @@ import { useEffect } from "react";
 import TopArtists from "./pages/TopArtists";
 import UserPlaylist from "./pages/UserPlaylist";
 import { AppAuth } from "./utils/AuthContext";
+import ArtistPage from "./pages/ArtistPage";
+
+import Layout from "./components/Layout";
 
 function App() {
   useEffect(() => {
@@ -24,10 +27,46 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Welcome />} />
-          <Route path="/SongAdd" element={<SongAdd />} />
-          <Route path="/PageSelect" element={<PageSelect />} />
-          <Route path="/TopArtists" element={<TopArtists />} />
-          <Route path="/UserPlaylist" element={<UserPlaylist />} />
+          <Route
+            path="/SongAdd"
+            element={
+              <Layout>
+                <SongAdd />
+              </Layout>
+            }
+          />
+          <Route
+            path="/PageSelect"
+            element={
+              <Layout>
+                <PageSelect />
+              </Layout>
+            }
+          />
+          <Route
+            path="/TopArtists"
+            element={
+              <Layout>
+                <TopArtists />
+              </Layout>
+            }
+          />
+          <Route
+            path="/UserPlaylist"
+            element={
+              <Layout>
+                <UserPlaylist />
+              </Layout>
+            }
+          />
+          <Route
+            path="/ArtistPage"
+            element={
+              <Layout>
+                <ArtistPage />
+              </Layout>
+            }
+          />
         </Routes>
       </Router>
     </AppAuth>

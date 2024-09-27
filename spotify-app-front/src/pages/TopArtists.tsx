@@ -80,23 +80,23 @@ const TopArtists = () => {
   return (
     <>
       <div className="flex flex-col mt-4 text-center justify-center items-center h-full">
-        <h1>Top Artists: </h1>
+        <h1>Top Spotify Artists By Genre: </h1>
         <div className="flex flex-row ">
           {Object.entries(genreState).map(([genre, artists]) => (
             <div
               key={genre}
-              className="bg-stone-900 text-zinc-300 rounded-xl px-5 py-3 mb-3 mt-6 mx-3 flex-1 flex flex-col justify-between"
+              className="bg-stone-900 text-zinc-300 rounded-xl py-3 mb-3 mt-6 mx-3 flex-1 flex flex-col justify-between"
             >
               <div className="flex flex-col w-full justify-between">
                 <span className="font-bold mb-2">
-                  Top {isGenreKey(genre) && genreMap[genre]} Artists:
+                  {isGenreKey(genre) && genreMap[genre]}
                 </span>
                 {Array.isArray(artists) &&
                   artists.length > 0 &&
                   artists.map((artist: Artist, index: number) => (
                     <button
                       onClick={() => handleArtistSelection(artist)}
-                      className="w-full hover:bg-slate-400 hover:rounded-md"
+                      className="w-full px-4 hover:bg-neutral-700 transition-colors duration-150 hover:rounded-sm"
                       key={index}
                     >
                       {artist.name}

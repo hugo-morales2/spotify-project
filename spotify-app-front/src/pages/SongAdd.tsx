@@ -19,6 +19,7 @@ import { Form } from "react-bootstrap";
 import { AuthContext } from "../utils/AuthContext";
 import formReducer from "../utils/reducers";
 import { useLocation } from "react-router-dom";
+import Card from "../components/Card";
 
 const initialFormState = {
   songName: "",
@@ -43,7 +44,7 @@ const SongAdd = () => {
   );
 
   const [nameFormState, dispatch] = useReducer(formReducer, initialFormState);
-  const [trackData, setTrackData] = useState<Tracks[]>([]);
+  const [trackData, setTrackData] = useState<[Tracks[]]>([[]]);
 
   const [selectedTrack, setSelectedTrack] = useState<Tracks>();
 
@@ -52,15 +53,25 @@ const SongAdd = () => {
   // handle the submission of the song name/artist form -> goal is to obtain a song ID for use with the ID form
   function handleNameSubmit(event: React.FormEvent<HTMLFormElement>) {
     function handleSearchResponse(data: searchResponse) {
-      console.log(data.tracks.items.length + " items found: ");
+      let rowList: Tracks[] = [];
+      let pageList: Tracks[][] = [];
+
       for (let i = 0; i < data.tracks.items.length; i++) {
-        console.log(
-          data.tracks.items[i].name +
-            " by " +
-            data.tracks.items[i].artists[0].name
-        );
+        if (data.tracks.items[i].name.length >= 25) {
+          data.tracks.items[i].name =
+            data.tracks.items[i].name.substring(0, 25) + "...";
+        }
+
+        rowList.push(data.tracks.items[i]);
+
+        if (i % 16 == 15) {
+          pageList.push([...rowList]);
+          rowList = [];
+        }
       }
-      setTrackData(data.tracks.items);
+      // if there are items left not in a row after the loop finishes then add then to their own row
+
+      setTrackData([data.tracks.items]);
     }
 
     event.preventDefault();
@@ -75,10 +86,12 @@ const SongAdd = () => {
               " artist:" +
               nameFormState.artistName,
             type: "track",
+            limit: "50",
           })
         : new URLSearchParams({
             q: "artist:" + nameFormState.artistName,
             type: "track",
+            limit: "50",
           });
 
     // call to get the results of the user's search
@@ -201,7 +214,7 @@ const SongAdd = () => {
                 onChange={(e) => handleTextChange(e)}
               />
             </Form.Group>
-            <button className="p-3 rounded-md bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2">
+            <button className="p-3 mt-3 rounded-md bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2">
               Search
             </button>
           </Form>
@@ -209,15 +222,19 @@ const SongAdd = () => {
         <div className=" mx-4 p-6 bg-stone-800 rounded-b-md">
           <div className="flex flex-col h-full justify-between  ">
             Songs:
-            <div className="grid grid-cols-2 md:grid-cols-8 gap-4 mt-3 mb-6 text-center flex-grow">
+            <div className="grid grid-cols-2 md:grid-cols-8 justify-center gap-4 mt-3 mb-12 text-center flex-grow">
               {trackData.map((track) => (
-                <button
-                  className=" px-2 rounded-md transition-colors duration-100 bg-neutral-900 hover:bg-neutral-700"
+                <Card
                   key={track.id}
-                  onClick={() => setSelectedTrack(track)}
+                  cardStyle="within"
+                  className=""
+                  m="2"
+                  func={() => setSelectedTrack(track)}
                 >
-                  {track.name} - {track.artists[0].name}
-                </button>
+                  <button className="" key={track.id}>
+                    {track.name} - {track.artists[0].name}
+                  </button>
+                </Card>
               ))}
             </div>
             <div className="flex justify-center mt-auto space-x-3">

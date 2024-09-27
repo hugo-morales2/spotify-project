@@ -71,12 +71,18 @@ export interface AuthContextProps {
 export interface searchResponse {
   tracks: {
     items: Tracks[];
+    total: number;
+    next: string;
   };
   artists: {
     items: Artist[];
+    total: number;
+    next: string;
   };
   albums: {
     items: AlbumData[];
+    total: number;
+    next: string;
   };
 }
 

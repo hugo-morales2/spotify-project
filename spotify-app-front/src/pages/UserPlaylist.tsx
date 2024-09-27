@@ -80,7 +80,7 @@ const UserPlaylist = () => {
     <>
       <div className="flex flex-col py-8 mt-6 px-6 mx-20 justify-center items-center h-full rounded-lg bg-zinc-900">
         <h1 className="mb-6"> {userDisplayName}'s saved playlists: </h1>
-        <div className="flex flex-wrap gap-2 justify-center text-neutral-300">
+        <div className="grid grid-cols-2 md:grid-cols-8 gap-4 mt-3 mb-12 text-center flex-grow">
           {playlistData.map((playlist, index) => (
             <button
               // change this to the alternate styles

@@ -104,22 +104,22 @@ const pageSelect = () => {
             </div>
             {/* this is the bottom part */}
             <div className="flex flex-row rounded-b-lg bg-stone-700 basis-1/6">
-              <div className="text-center place-content-center hover:bg-neutral-600 transition-colors duration-300 rounded-bl-lg flex-1">
+              <div className="text-center place-content-center hover:bg-blue-600 transition-colors duration-300 rounded-bl-lg flex-1">
                 Pop
               </div>
-              <div className="text-center place-content-center hover:bg-neutral-600 transition-colors duration-300 flex-1">
+              <div className="text-center place-content-center hover:bg-amber-700 transition-colors duration-300 flex-1">
                 Hip-hop
               </div>
-              <div className="text-center place-content-center hover:bg-neutral-600 transition-colors duration-300 flex-1">
+              <div className="text-center place-content-center hover:bg-pink-700 transition-colors duration-300 flex-1">
                 Rock
               </div>
-              <div className="text-center place-content-center hover:bg-neutral-600 transition-colors duration-300 flex-1">
+              <div className="text-center place-content-center hover:bg-teal-500 transition-colors duration-300 flex-1">
                 R&B
               </div>
-              <div className="text-center place-content-center hover:bg-neutral-600 transition-colors duration-300 flex-1">
+              <div className="text-center place-content-center hover:bg-red-600 transition-colors duration-300 flex-1">
                 Electronic
               </div>
-              <div className="text-center place-content-center hover:bg-neutral-600 transition-colors duration-300 rounded-br-lg flex-1">
+              <div className="text-center place-content-center hover:bg-green-600 transition-colors duration-300 rounded-br-lg flex-1">
                 Indie
               </div>
             </div>

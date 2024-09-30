@@ -12,7 +12,7 @@ const Dropdown = () => {
     <div className="relative">
       <button
         onClick={() => toggleOpen()}
-        className="p-2 w-10 h-10 inline-flex text-sm text-gray-500 rounded-lg items-center justify-center hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+        className="p-2 w-10 h-10 inline-flex text-sm text-gray-500 rounded-lg items-center justify-center hover:bg-neutral-800 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600"
       >
         <svg
           className="w-5 h-5"

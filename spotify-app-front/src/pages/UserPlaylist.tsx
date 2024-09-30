@@ -5,6 +5,7 @@ import { PlaylistData, Playlist, Tracks } from "../utils/interfaces";
 
 import { API_BASE_URL } from "../utils/config";
 import { AuthContext } from "../utils/AuthContext";
+import Card from "../components/Card";
 
 const UserPlaylist = () => {
   const navigate = useNavigate();
@@ -80,17 +81,20 @@ const UserPlaylist = () => {
     <>
       <div className="flex flex-col py-8 mt-6 px-6 mx-20 justify-center items-center h-full rounded-lg bg-zinc-900">
         <h1 className="mb-6"> {userDisplayName}'s saved playlists: </h1>
-        <div className="grid grid-cols-2 md:grid-cols-8 gap-4 mt-3 mb-12 text-center flex-grow">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 justify-center gap-4 mt-3 mb-12 text-center flex-grow">
           {playlistData.map((playlist, index) => (
-            <button
-              // change this to the alternate styles
-              className="p-2 rounded-md bg-zinc-700 transition-colors duration-300 hover:bg-zinc-600 border-gray-950 border-2"
-              value={playlist.id}
-              key={index}
-              onClick={(e) => playlistSelection(e)}
-            >
-              {playlist.name}
-            </button>
+            <>
+              <div
+                className="flex-grow h-full"
+                onClick={(e) => playlistSelection(e)}
+              >
+                <Card key={index} cardStyle="within" className="" m="2">
+                  <button className="" key={index}>
+                    {playlist.name} - {playlist.owner.display_name}
+                  </button>
+                </Card>
+              </div>
+            </>
           ))}
         </div>
         {trackData != undefined && (

@@ -87,7 +87,7 @@ const TopArtists = () => {
               key={genre}
               className="bg-stone-900 text-zinc-300 rounded-xl py-3 mb-3 mt-6 mx-3 flex-1 flex flex-col justify-between"
             >
-              <div className="flex flex-col w-full justify-between">
+              <div className="flex flex-col w-full justify-between ">
                 <span className="font-bold mb-2">
                   {isGenreKey(genre) && genreMap[genre]}
                 </span>
@@ -96,7 +96,7 @@ const TopArtists = () => {
                   artists.map((artist: Artist, index: number) => (
                     <button
                       onClick={() => handleArtistSelection(artist)}
-                      className="w-full px-4 hover:bg-neutral-700 transition-colors duration-150 hover:rounded-sm"
+                      className="w-full px-4 py-1 hover:bg-neutral-700 transition-colors duration-150 hover:rounded-sm"
                       key={index}
                     >
                       {artist.name}
@@ -104,7 +104,7 @@ const TopArtists = () => {
                   ))}
               </div>
 
-              <button className="bg-neutral-700 p-2 rounded-xl hover:bg-gray-800 mt-6">
+              <button className="bg-neutral-700 p-2 rounded-xl hover:bg-green-600 transition-colors duration-300 hover:text-neutral-800 mt-6">
                 View more
               </button>
             </div>

@@ -44,9 +44,11 @@ const SongAdd = () => {
   );
 
   const [nameFormState, dispatch] = useReducer(formReducer, initialFormState);
-  const [trackData, setTrackData] = useState<[Tracks[]]>([[]]);
+  const [trackData, setTrackData] = useState<Tracks[][]>();
 
   const [selectedTrack, setSelectedTrack] = useState<Tracks>();
+  const [currentPage, setCurrentPage] = useState<Tracks[]>([]);
+  const pageIndex = useRef(0);
 
   // CHANGe
 
@@ -69,9 +71,14 @@ const SongAdd = () => {
           rowList = [];
         }
       }
-      // if there are items left not in a row after the loop finishes then add then to their own row
 
-      setTrackData([data.tracks.items]);
+      // if there are items left not in a row after the loop finishes then add then to their own row
+      if (rowList.length > 0) {
+        pageList.push([...rowList]);
+      }
+
+      setTrackData(pageList);
+      setCurrentPage(pageList[0]);
     }
 
     event.preventDefault();
@@ -143,6 +150,7 @@ const SongAdd = () => {
     setPlaylistData(userPlaylists);
   }
   useEffect(() => {
+    console.log(pageIndex.current);
     if (!accessToken) return;
     const access = "Bearer " + accessToken;
 
@@ -156,6 +164,8 @@ const SongAdd = () => {
         return response.json();
       })
       .then((response) => handlePlaylistData(response));
+
+    if (trackData) setCurrentPage(trackData[0]);
   }, [accessToken]);
 
   function handleTextChange(
@@ -222,8 +232,8 @@ const SongAdd = () => {
         <div className=" mx-4 p-6 bg-stone-800 rounded-b-md">
           <div className="flex flex-col h-full justify-between  ">
             Songs:
-            <div className="grid grid-cols-2 md:grid-cols-8 justify-center gap-4 mt-3 mb-12 text-center flex-grow">
-              {trackData.map((track) => (
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 justify-center gap-4 mt-3 mb-12 text-center flex-grow">
+              {currentPage.map((track) => (
                 <Card
                   key={track.id}
                   cardStyle="within"
@@ -236,6 +246,60 @@ const SongAdd = () => {
                   </button>
                 </Card>
               ))}
+            </div>
+            <div className="flex flex-row space-x-2">
+              <button
+                onClick={() => {
+                  if (trackData) {
+                    if (pageIndex.current >= 1) {
+                      pageIndex.current -= 1;
+                    }
+                    setCurrentPage(trackData[pageIndex.current]);
+                  }
+                }}
+                className="p-3 mt-3 rounded-md aspect-square w-12 items-center justify-center bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  className="size-6 self-center"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.75 19.5 8.25 12l7.5-7.5"
+                  />
+                </svg>
+              </button>
+              <button
+                onClick={() => {
+                  if (trackData) {
+                    if (pageIndex.current <= trackData.length - 2) {
+                      pageIndex.current += 1;
+                    }
+                    setCurrentPage(trackData[pageIndex.current]);
+                  }
+                }}
+                className="p-3 mt-3 rounded-md aspect-square w-12 bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  className="size-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="m8.25 4.5 7.5 7.5-7.5 7.5"
+                  />
+                </svg>
+              </button>
             </div>
             <div className="flex justify-center mt-auto space-x-3">
               <button

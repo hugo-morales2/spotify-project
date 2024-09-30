@@ -5,7 +5,7 @@ interface CardProps {
   cardStyle: string;
   m?: string;
   children: React.ReactNode;
-  func: () => void;
+  func?: () => void;
 }
 
 const Card = ({ className, cardStyle, m, children, func }: CardProps) => {

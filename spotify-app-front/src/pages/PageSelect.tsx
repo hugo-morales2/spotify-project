@@ -54,7 +54,7 @@ const pageSelect = () => {
           <div className="mx-8">
             Lorem ipsum odor amet, consectetuer adipiscing elit. Risus lobortis
             nam posuere habitant turpis. Lobortis feugiat magna aliquam,
-            maecenas sapien ornare. Gravida eleifend ligula primis sociosqu ante
+            maecenas sapiem ornare. Gravida eleifend ligula primis sociosqu ante
             nunc suspendisse enim adipiscing. Lacinia per hac aliquet ornare dui
             dis lectus. Dapibus curae metus cubilia porttitor tincidunt nullam.
             Purus euismod massa eget et blandit habitant facilisis sem. Taciti a

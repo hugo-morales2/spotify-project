@@ -9,7 +9,7 @@ const Dropdown = () => {
     setOpen(!isOpen);
   }
   return (
-    <div className="relative">
+    <div className="md:hidden block relative">
       <button
         onClick={() => toggleOpen()}
         className="p-2 w-10 h-10 inline-flex text-sm text-gray-500 rounded-lg items-center justify-center hover:bg-neutral-800 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-gray-600"

@@ -181,8 +181,8 @@ const SongAdd = () => {
 
   return (
     <>
-      <div className="flex flex-col my-4 mx-4 w-auto h-full">
-        <div className="flex-col space-y-4 bg-stone-800 p-6 mx-4 rounded-t-md ">
+      <div className="flex flex-col my-4 mx-4 w-auto h-full ">
+        <div className="flex flex-col space-y-4 bg-stone-800 p-6 mx-4 rounded-t-md items-center ">
           <h1>Add a song!</h1>
           <Form.Group className="mb-2" controlId="playlistSelect">
             <Form.Select
@@ -205,30 +205,44 @@ const SongAdd = () => {
             </Form.Select>
           </Form.Group>
 
-          <Form onSubmit={handleNameSubmit}>
-            <Form.Group className="mb-3 space-x-2" controlId="songName">
-              <Form.Control
-                className="text-center rounded-full p-1.5 text-black bg-gray-300"
-                type="text"
-                placeholder="Song Name"
-                name="songName"
-                value={nameFormState.songName}
-                onChange={(e) => handleTextChange(e)}
-              />
-              <Form.Control
-                className="text-center rounded-full p-1.5 text-black bg-gray-300"
-                type="text"
-                placeholder="Artist Name"
-                name="artistName"
-                value={nameFormState.artistName}
-                onChange={(e) => handleTextChange(e)}
-              />
-            </Form.Group>
-            <button className="p-3 mt-3 rounded-md bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2">
-              Search
-            </button>
+          <Form
+            className="flex flex-col justify-center items-center place-content-center place-items-center"
+            onSubmit={handleNameSubmit}
+          >
+            <div>
+              <Form.Group className="mb-3 space-x-2" controlId="songName">
+                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2">
+                  <div>
+                    <Form.Control
+                      className="text-center rounded-full p-1.5 text-black bg-gray-300"
+                      type="text"
+                      placeholder="Song Name"
+                      name="songName"
+                      value={nameFormState.songName}
+                      onChange={(e) => handleTextChange(e)}
+                    />
+                  </div>
+                  <div>
+                    <Form.Control
+                      className="text-center rounded-full p-1.5 text-black bg-gray-300"
+                      type="text"
+                      placeholder="Artist Name"
+                      name="artistName"
+                      value={nameFormState.artistName}
+                      onChange={(e) => handleTextChange(e)}
+                    />
+                  </div>
+                </div>
+              </Form.Group>
+            </div>
+            <div>
+              <button className="p-3 mt-3 rounded-md bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2">
+                Search
+              </button>
+            </div>
           </Form>
         </div>
+        <hr className="h-px mx-10 my-8 bg-gray-200 border-0 dark:bg-gray-700"></hr>
         <div className=" mx-4 p-6 bg-stone-800 rounded-b-md">
           <div className="flex flex-col h-full justify-between  ">
             Songs:
@@ -247,7 +261,7 @@ const SongAdd = () => {
                 </Card>
               ))}
             </div>
-            <div className="flex flex-row space-x-2">
+            <div className="flex justify-center mt-auto items-center space-x-2">
               <button
                 onClick={() => {
                   if (trackData) {
@@ -257,57 +271,29 @@ const SongAdd = () => {
                     setCurrentPage(trackData[pageIndex.current]);
                   }
                 }}
-                className="p-3 mt-3 rounded-md aspect-square w-12 items-center justify-center bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2"
+                className="flex h-full p-3 rounded-md aspect-square w-12 items-center justify-center bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
                   className="size-6 self-center"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M15.75 19.5 8.25 12l7.5-7.5"
                   />
                 </svg>
               </button>
               <button
                 onClick={() => {
-                  if (trackData) {
-                    if (pageIndex.current <= trackData.length - 2) {
-                      pageIndex.current += 1;
-                    }
-                    setCurrentPage(trackData[pageIndex.current]);
-                  }
-                }}
-                className="p-3 mt-3 rounded-md aspect-square w-12 bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="m8.25 4.5 7.5 7.5-7.5 7.5"
-                  />
-                </svg>
-              </button>
-            </div>
-            <div className="flex justify-center mt-auto space-x-3">
-              <button
-                onClick={() => {
                   handleIdSubmit();
                 }}
                 className={
-                  "p-3 rounded-md" +
+                  "px-3 h-12 rounded-md text-sm " +
                   (selectedTrack == undefined
                     ? " bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2"
                     : "bg-zinc-700 transition-colors duration-300 hover:bg-zinc-500 border-gray-950 border-2")
@@ -318,7 +304,41 @@ const SongAdd = () => {
               </button>
               <button
                 onClick={() => setSelectedTrack(undefined)}
-                className="p-3 rounded-md bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2"
+                className="p-3 flex md:hidden rounded-md text-sm bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2"
+              >
+                Clear Selection
+              </button>
+              <button
+                onClick={() => {
+                  if (trackData) {
+                    if (pageIndex.current <= trackData.length - 2) {
+                      pageIndex.current += 1;
+                    }
+                    setCurrentPage(trackData[pageIndex.current]);
+                  }
+                }}
+                className="flex h-full p-3  rounded-md aspect-square w-12 items-center justify-center bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="size-6 self-center"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="m8.25 4.5 7.5 7.5-7.5 7.5"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="hidden md:flex ml-auto mr-4">
+              <button
+                onClick={() => setSelectedTrack(undefined)}
+                className="p-3 rounded-md text-sm bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2"
               >
                 Clear Selection
               </button>

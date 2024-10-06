@@ -79,22 +79,21 @@ const UserPlaylist = () => {
 
   return (
     <>
-      <div className="flex flex-col py-8 mt-6 px-6 mx-20 justify-center items-center h-full rounded-lg bg-zinc-900">
+      <div className="flex flex-col py-8 mt-6 px-6 lg:mx-52 md:mx-24 sm:mx-16 mx-10 justify-center items-center h-full rounded-lg bg-zinc-900">
         <h1 className="mb-6"> {userDisplayName}'s saved playlists: </h1>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 justify-center gap-4 mt-3 mb-12 text-center flex-grow">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 justify-center gap-4 mt-3 mb-12 text-center flex-grow">
           {playlistData.map((playlist, index) => (
-            <>
-              <div
-                className="flex-grow h-full"
-                onClick={(e) => playlistSelection(e)}
-              >
-                <Card key={index} cardStyle="within" className="" m="2">
-                  <button className="" key={index}>
-                    {playlist.name} - {playlist.owner.display_name}
-                  </button>
-                </Card>
-              </div>
-            </>
+            <div
+              className="flex-grow h-full mx-2 my-2"
+              onClick={(e) => playlistSelection(e)}
+              key={index}
+            >
+              <Card cardStyle="within" className="my-2" m="2">
+                <button className="" key={index}>
+                  {playlist.name} - {playlist.owner.display_name}
+                </button>
+              </Card>
+            </div>
           ))}
         </div>
         {trackData != undefined && (

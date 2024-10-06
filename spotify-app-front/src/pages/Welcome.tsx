@@ -93,7 +93,7 @@ const Welcome = () => {
 
         <div className="flex justify-center">
           <button
-            className="relative flex group my-6 w-26 items-center bg-white text-gray-900 px-5 py-3 rounded-lg transition-colors duration-300 hover:bg-green-600 hover:text-white"
+            className="relative flex group my-6 w-26 items-center bg-white text-gray-900 px-5 py-3 rounded-lg transition-colors duration-300 hover:bg-spot-green hover:text-white"
             onClick={handleRedirect}
           >
             <img

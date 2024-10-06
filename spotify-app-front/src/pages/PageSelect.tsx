@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 //import { useNavigate } from "react-router-dom";
 
-import PageButton from "../components/PageButton";
 import { AuthContext } from "../utils/AuthContext";
 import { API_BASE_URL } from "../utils/config";
 import { UserData } from "../utils/interfaces";
@@ -45,12 +44,12 @@ const pageSelect = () => {
 
   return (
     <>
-      <div className="flex flex-row my-4 mx-10 flex-grow space-x-6">
+      <div className="flex flex-col md:flex-row my-4 mx-10 flex-grow md:space-x-6 space-y-6 md:space-y-0">
         {/*Left side - large div*/}
-        <div className="w-1/2 flex flex-col bg-stone-800 rounded-lg flex-grow my-2">
-          <div className="basis-2/5 rounded-t-lg bg-neutral-400 " />
+        <div className="w-full md:w-1/2 flex flex-col bg-stone-800 rounded-lg flex-grow my-2">
+          <div className="basis-2/5 rounded-t-lg bg-neutral-400 ">bruv</div>
           <div className="my-5 ml-6 text-2xl font-semibold text-color-neutral-400">
-            Featured Artist:{" "}
+            Featured Artist:
           </div>
           <div className="mx-8">
             Lorem ipsum odor amet, consectetuer adipiscing elit. Risus lobortis
@@ -73,22 +72,24 @@ const pageSelect = () => {
             velit. Eget lobortis primis sociosqu fringilla metus habitasse quam
             fames.
           </div>
-          <div className="flex justify-center mt-auto space-x-3">
-            <button className="p-3 mb-4 rounded-md bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2">
+          <div className="flex justify-center mt-auto ">
+            <button className="p-3 mt-6 md:mt-0 mb-4 rounded-md bg-zinc-900 transition-colors duration-300 hover:bg-zinc-700 border-gray-950 border-2">
               Artist Page
             </button>
           </div>
         </div>
-        <div className="w-1/2 flex flex-col my-2 space-y-4">
+        <div className="w-full md:w-1/2 items-start flex flex-col  space-y-4">
           <div className="flex flex-col bg-stone-800 rounded-lg flex-grow mb-2">
             {/* this is the top part */}
             <div className="flex flex-row rounded-t-lg basis-5/6">
-              <div className="m-4 rounded-lg h-5/6 basis-5/12 bg-neutral-400"></div>
-              <div className="flex flex-col basis-7/12">
+              <div className="m-4 rounded-lg h-5/6 md:basis-5/12 bg-neutral-400">
+                bruv
+              </div>
+              <div className="flex flex-col md:basis-7/12">
                 <div className="mt-6 mb-3 ml-4 text-2xl font-semibold text-color-neutral-400">
                   Song Of The Day
                 </div>
-                <div className="p-4 mt-1 mr-3">
+                <div className="p-4 mt-1 mr-3 mb-4 md:mb-0 h-full">
                   Lorem ipsum odor amet, consectetuer adipiscing elit. Risus
                   lobortis nam posuere habitant turpis. Lobortis feugiat magna
                   aliquam, maecenas sapien ornare. Gravida eleifend ligula
@@ -103,7 +104,7 @@ const pageSelect = () => {
               </div>
             </div>
             {/* this is the bottom part */}
-            <div className="flex flex-row rounded-b-lg bg-stone-700 basis-1/6">
+            <div className="flex flex-row rounded-b-lg bg-stone-700 md:basis-1/6 h-20">
               <div className="text-center place-content-center hover:bg-blue-600 transition-colors duration-300 rounded-bl-lg flex-1">
                 Pop
               </div>
